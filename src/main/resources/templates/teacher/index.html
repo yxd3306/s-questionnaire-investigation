@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>问卷网-教师端</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../static/teacher/css/index.css">
+    <script src="../../static/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../../static/js/common.js"></script>
+
+
+</head>
+<body>
+
+<nav class="top-bar">
+    <div class="top-bar-logo">
+        <a href="javascript:void(0)">
+            <img class="top-bar-logo-img" src="../../static/teacher/img/logo_dog.jpg">
+        </a>
+    </div>
+    <div class="head-nav ">
+        <a>
+            <img src="../../static/teacher/img/my.png">
+            <span>我的问卷</span>
+        </a>
+        &nbsp;
+        <a href="javascript:void(0)">
+            <span>|</span>
+        </a>
+        &nbsp;
+        <a>
+            <img src="../../static/teacher/img/user.png">
+            <span id="userInfo">userInfo</span>
+        </a>
+        &nbsp;
+        <a>
+
+            <img src="../../static/teacher/img/remind.png">
+            <span>消息</span>
+        </a>
+        &nbsp;
+        <a href="/teacher/login.html">
+            <img src="../../static/teacher/img/out.png">
+            <span>退出</span>
+        </a>
+    </div>
+</nav>
+<nav class="list-body">
+    <div class="list-data-head">
+        <div class="list-data show-mode">
+
+            <table class="table">
+                <caption>
+                    <button class="has-data-add">
+                        <img class="add-img" src="../../static/teacher/img/add-img.png">
+                        <span>创建问卷</span>
+                    </button>
+                </caption>
+                <thead>
+                <tr>
+                    <td>标题</td>
+                    <td>状态</td>
+                    <td>操作</td>
+                </tr>
+                </thead>
+                <tbody class="data-body">
+                </tbody>
+            </table>
+        </div>
+        <div class="not-data hide-mode">
+            <img class="not-data-img" src="../../static/teacher/img/not-data.png"><br/>
+            <span class="not-data-text">你目前还没有问卷，马上创建一份问卷吧！</span><br/>
+            <button class="not-data-add">
+                <img class="add-img" src="../../static/teacher/img/add-img.png">
+                <span>创建问卷</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+</body>
+<script type="text/javascript">
+    function init() {
+        $(document).ready(function () {
+            var userName = common.getCookie("teacherUserName");
+            $('#userInfo').html(userName);
+
+            var data = {
+                id: common.getCookie("teacherUserId")
+            }
+            common.ajaxSend(
+                "/teacher/selectQuestionnaires",
+                data,
+                function (e) {
+                    if (e.code == 1) {
+                        $('.not-data').addClass('hide-mode');
+                        $('.list-data').removeClass('show-mode');
+                        var html = '';
+                        $.each(e.data, function (i, v) {
+                            if (v.questionnaireState == 0) {
+                                // 已完成
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '   <td>' + v.questionnaireTitle + '</td>' +
+                                    '       <td class="ok">已完成</td>' +
+                                    '   <td>' +
+                                    '<td>' +
+                                    '   <button class="update">修改</button>' +
+                                    '   |' +
+                                    '   <button class="query">查看</button>' +
+                                    '   |' +
+                                    '   <button class="delete">删除</button>' +
+                                    '       </td>' +
+                                    '   </tr>'
+                            } else if (v.questionnaireState == 1) {
+                                // 进行中
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '   <td>' + v.questionnaireTitle + '</td>' +
+                                    '       <td class="doing">进行中</td>' +
+                                    '<td>' +
+                                    '   <button class="update" onClick="doSomething('+v.questionnaireId+',this)">修改</button>' +
+                                    '   |' +
+                                    '   <button class="query" onClick="doSomething('+v.questionnaireId+',this)">查看</button>' +
+                                    '   |' +
+                                    '   <button class="delete" onClick="doSomething('+v.questionnaireId+',this)">删除</button>' +
+                                    '       </td>' +
+                                    '   </tr>'
+                            } else if (v.questionnaireState == 2) {
+                                // 待测评
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '   <td>' + v.questionnaireTitle + '</td>' +
+                                    '       <td class="wait">待测评</td>' +
+                                    '   <td>' +
+                                    '   <td>' +
+                                    '   <button class="update">修改</button>' +
+                                    '   |' +
+                                    '   <button class="query">查看</button>' +
+                                    '   |' +
+                                    '   <button class="delete">删除</button>' +
+                                    '       </td>' +
+                                    '   </tr>'
+                            }
+                            $('.data-body').append(html);
+                        })
+                    } else {
+                        $('.list-data').addClass('show-mode');
+                        $('.not-data').removeClass('hide-mode');
+                    }
+                    console.log(e);
+                },
+                function (e) {
+                    console.log("err" + e);
+                }
+            )
+
+            $('.not-data-add').on('click', function () {
+                window.location.href = "/teacher/add.html";
+            })
+            $('.has-data-add').on('click', function () {
+                window.location.href = "/teacher/add.html";
+            })
+
+        });
+    }
+
+    init();
+
+
+    function doSomething(id,obj) {
+
+        var type=$(obj).text();
+        var data={
+            questionnaireId:id
+        }
+        if(type=="修改"){
+            // TODO
+        }else if(type=="查看"){
+            // TODO
+        }else if(type=="删除"){
+            common.ajaxSend(
+                "/teacher/deleteQuestionnaireById",
+                data,
+                function (e) {
+                    console.log(e);
+                    window.location.reload()
+                },
+                function (e) {
+                    
+                }
+            )
+        }
+
+    }
+
+
+</script>
+</html>

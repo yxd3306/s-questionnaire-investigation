@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>问卷网-创建测评</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../static/teacher/css/addInfo.css">
+    <script src="../../static/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../../static/js/common.js"></script>
+
+    <link rel="stylesheet" href="../../static/css/jquery-ui.min.css">
+    <script src="//apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+</head>
+<body>
+
+<nav class="top-bar">
+    <div class="top-bar-logo">
+        <a href="/teacher/index.html">
+            <img class="top-bar-logo-img" src="../../static/teacher/img/logo_dog.jpg">
+        </a>
+    </div>
+    <div class="head-nav ">
+        <a>
+            <img src="../../static/teacher/img/my.png">
+            <span>我的问卷</span>
+        </a>
+        &nbsp;
+        <a href="javascript:void(0)">
+            <span>|</span>
+        </a>
+        &nbsp;
+        <a>
+            <img src="../../static/teacher/img/user.png">
+            <span id="userInfo">userInfo</span>
+        </a>
+        &nbsp;
+        <a>
+
+            <img src="../../static/teacher/img/remind.png">
+            <span>消息</span>
+        </a>
+        &nbsp;
+        <a href="/teacher/login.html">
+            <img src="../../static/teacher/img/out.png">
+            <span>退出</span>
+        </a>
+    </div>
+</nav>
+<nav class="add-body">
+    <div class="add-head"></div>
+    <div class="add-title">
+        <span class="title" id="title"></span>
+    </div>
+    <div class="add-context">
+        <button class="add-title-button" id="opener">批量添加题目</button>
+    </div>
+
+
+    <div class="add-context-info" id="dialog" title="添加题目">
+        <p>A:<input class="context"/></p>
+        <p>B:<input class="context"/></p>
+        <p>C:<input class="context"/></p>
+        <p>D:<input class="context"/></p>
+        <button class="context-button">提交</button>
+    </div>
+
+
+    <!--<div class="add-context-info">
+        A:<input class="context"/>
+        B:<input class="context"/>
+        C:<input class="context"/>
+        D:<input class="context"/>
+    </div>-->
+</nav>
+
+</body>
+<script type="text/javascript">
+    init();
+
+    add();
+
+
+
+    function init() {
+        $(document).ready(function () {
+            var userName=common.getCookie("teacherUserName");
+            var questionnaireId = common.getCookie("questionnaireId");
+            $('#userInfo').html(userName);
+            var data={
+                questionnaireId:questionnaireId
+            }
+            common.ajaxSend(
+                "/teacher/selectQuestionnaireByKey",
+                data,
+                function (e) {
+                    if(e.code==1){
+                        $('#title').html(e.data)
+                    }
+                },function (e) {
+
+                }
+            )
+
+        });
+
+        $( "#dialog" ).dialog({
+            autoOpen: false,
+            show: {
+                effect: "blind",
+                duration: 1000
+            },
+            hide: {
+                effect: "explode",
+                duration: 1000
+            }
+        });
+
+        $( "#opener" ).click(function() {
+            $( "#dialog" ).dialog( "open" );
+        });
+    }
+
+    function add() {
+
+        $('.context-button').on('click',function () {
+
+            var input=$('.context');
+            var v1,v2,v3,v4='';
+            var questionnaireId = common.getCookie("questionnaireId");
+
+
+            for(var i=0;i<input.length;i++){
+                if(i==0){
+                    v1=$(input[i]).val()
+                }else if(i==1){
+                    v2=$(input[i]).val()
+                }else if(i==2){
+                    v3=$(input[i]).val()
+                }else if(i==3){
+                    v4=$(input[i]).val()
+                }
+
+            }
+            var data={
+                questionnaireId:questionnaireId,
+                questionnaireContext1:v1,
+                questionnaireContext2:v2,
+                questionnaireContext3:v3,
+                questionnaireContext4:v4
+            }
+            common.ajaxSend(
+                "/teacher/addContext",
+                data,
+                function (e) {
+                    if(e.code==1){
+                        window.location.href='/teacher/index.html'
+                    }else{
+                        alert(e.msg)
+                        $( "#dialog" ).dialog( "close" );
+                    }
+                },
+                function (e) {
+
+                }
+            )
+
+        })
+    }
+
+
+
+
+</script>
+</html>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.questionnaire.dao.QuestionnaireTypeMapper">
+    <resultMap id="BaseResultMap" type="com.questionnaire.entity.QuestionnaireType">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        <result column="questionnarie_id" property="questionnarieId" jdbcType="INTEGER"/>
+        <result column="questionnarie_contex_id" property="questionnarieContexId" jdbcType="INTEGER"/>
+        <result column="state" property="state" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, type_name, questionnarie_id, questionnarie_contex_id, state
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from t_questionnaire_type
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_questionnaire_type
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.questionnaire.entity.QuestionnaireType">
+    insert into t_questionnaire_type (id, type_name, questionnarie_id, 
+      questionnarie_contex_id, state)
+    values (#{id,jdbcType=INTEGER}, #{typeName,jdbcType=VARCHAR}, #{questionnarieId,jdbcType=INTEGER}, 
+      #{questionnarieContexId,jdbcType=INTEGER}, #{state,jdbcType=INTEGER})
+  </insert>
+    <insert id="insertSelective" parameterType="com.questionnaire.entity.QuestionnaireType">
+        insert into t_questionnaire_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="typeName != null">
+                type_name,
+            </if>
+            <if test="questionnarieId != null">
+                questionnarie_id,
+            </if>
+            <if test="questionnarieContexId != null">
+                questionnarie_contex_id,
+            </if>
+            <if test="state != null">
+                state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="typeName != null">
+                #{typeName,jdbcType=VARCHAR},
+            </if>
+            <if test="questionnarieId != null">
+                #{questionnarieId,jdbcType=INTEGER},
+            </if>
+            <if test="questionnarieContexId != null">
+                #{questionnarieContexId,jdbcType=INTEGER},
+            </if>
+            <if test="state != null">
+                #{state,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.questionnaire.entity.QuestionnaireType">
+        update t_questionnaire_type
+        <set>
+            <if test="typeName != null">
+                type_name = #{typeName,jdbcType=VARCHAR},
+            </if>
+            <if test="questionnarieId != null">
+                questionnarie_id = #{questionnarieId,jdbcType=INTEGER},
+            </if>
+            <if test="questionnarieContexId != null">
+                questionnarie_contex_id = #{questionnarieContexId,jdbcType=INTEGER},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.questionnaire.entity.QuestionnaireType">
+    update t_questionnaire_type
+    set type_name = #{typeName,jdbcType=VARCHAR},
+      questionnarie_id = #{questionnarieId,jdbcType=INTEGER},
+      questionnarie_contex_id = #{questionnarieContexId,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <!--自定义-->
+    <select id="selectQuestionnaires" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        t_questionnaire_type
+        where questionnarie_id=#{questionnarieId,jdbcType=INTEGER}
+    </select>
+
+</mapper>
