@@ -12,7 +12,7 @@
 }
 
 body {
-    background: #fff;
+    background: #eee;
     color: #222;
     cursor: auto;
     font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
@@ -125,8 +125,11 @@ ol, ul, li {
     height: 20px;
 }
 
-.head-nav a * ,.list-body .list-data-head .not-data .not-data-add * ,.add-data-body .add-data-contex *,caption .has-data-add * {
+.head-nav a * ,.list-body .list-data-head .not-data .not-data-add * ,.add-data-body .add-data-context *,caption .has-data-add *,.add-context-info .add-context-info-title *,.add-body .add-title * {
     vertical-align: middle;
+}
+button{
+    cursor: pointer;
 }
 .add-body{
     padding: 20px;
@@ -138,6 +141,8 @@ ol, ul, li {
     font-size: 26px;
     border-bottom: 1px solid #eee;
     padding-top: 30px;
+    background: #fff;
+    margin-top: 20px;
 }
 .add-body .add-title .title{
     font-size: 34px;
@@ -145,10 +150,14 @@ ol, ul, li {
 }
 
 .add-body .add-context {
-    width: 100%;
-    height: 200px;
+    margin-top: 20px;
+    width: 300px;
+    height: 50px;
     text-align: center;
     font-size: 26px;
+    background: #fff;
+    display: inline-block;
+    padding-top: 10px;
 }
 .add-body .add-context .add-title-button {
     width: 200px;
@@ -159,8 +168,6 @@ ol, ul, li {
     outline: none;
     color: #6d6d6d;
     background-color: #ffffff;
-    margin-top: 50px;
-    cursor: pointer;
 }
 .add-body .add-head{
     width: 100%;
@@ -183,5 +190,70 @@ ol, ul, li {
     outline: none;
     color: #6d6d6d;
     background-color: #ffffff;
-    cursor: pointer;
+}
+
+
+.add-body .add-context-info{
+    background-color: #ffffff;
+    margin: -60px 0 70px 310px;
+    padding: 10px 0 5px 10px;
+}
+.add-body .add-context-info .add-context-info-title{
+    margin: 0;
+    padding: 0;
+}
+.add-body .add-context-info .add-context-info-title .add-context-info-input{
+    border: none;
+    width: 625px;
+    height: 30px;
+    border-radius: 3px;
+    text-indent: 6px;
+    font-size: 16px;
+    color: #5f5f5f;
+    outline: none;
+}
+.add-body .add-context-info .add-context-info-checkbox{
+    width: 14px;
+    height: 14px;
+}
+.add-body .add-context-info .add-context-info-input{
+    border: none;
+    width: 600px;
+    height: 30px;
+    border-radius: 3px;
+    text-indent: 6px;
+    font-size: 16px;
+    color: #5f5f5f;
+    outline: none;
+}
+
+.add-body .add-context-info .add-context-info-close{
+    width: 30px;
+    height: 30px;
+    background: url("../img/delete.png") no-repeat;
+    background-size: 100% 100%;
+    border: none;
+    outline: none;
+    border-radius: 15px;
+    margin-right: 50px;
+    float: right;
+}
+.add-body .hide-mode{
+    display: none;
+}
+.add-body .add-context-info ul li{
+    margin-top: 5px;
+}
+.over{
+    background-color: #d8d8d8;
+}
+.focus{
+    background-color: #e8e8e8;
+}
+
+.add-body .add-title .add-title-release{
+    margin-right: 50px;
+    width: 70px;
+    height: 50px;
+    float: right;
 }

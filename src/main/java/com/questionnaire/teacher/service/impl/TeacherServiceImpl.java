@@ -3,16 +3,16 @@ package com.questionnaire.teacher.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.questionnaire.common.util.BaseUtil;
 import com.questionnaire.dao.QuestionnaireContextMapper;
+import com.questionnaire.dao.QuestionnaireContextTitleMapper;
 import com.questionnaire.dao.QuestionnaireMapper;
 import com.questionnaire.dao.QuestionnaireTypeMapper;
-import com.questionnaire.entity.Questionnaire;
-import com.questionnaire.entity.QuestionnaireType;
-import com.questionnaire.entity.RestQuestionnaireObject;
+import com.questionnaire.entity.*;
 import com.questionnaire.teacher.dao.TeacherMapper;
 import com.questionnaire.teacher.entity.Teacher;
 import com.questionnaire.teacher.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +37,8 @@ public class TeacherServiceImpl implements TeacherService {
     QuestionnaireContextMapper questionnaireContextMapper;
     @Autowired
     QuestionnaireTypeMapper questionnaireTypeMapper;
+    @Autowired
+    QuestionnaireContextTitleMapper questionnaireContextTitleMapper;
 
     // 登录
     @Override
@@ -168,52 +170,68 @@ public class TeacherServiceImpl implements TeacherService {
             jsonObject.put("code", 0);
             jsonObject.put("msg", "无相关问卷");
         } else {
-
             Questionnaire questionnaire = questionnaireMapper.selectByPrimaryKey(Integer.parseInt(questionnaireId));
             if (null == questionnaire) {
                 jsonObject.put("code", 0);
                 jsonObject.put("msg", "无相关问卷");
             } else {
+                List<QuestionnaireContext> questionnaireContexts = questionnaireContextMapper.selectQuestionnaireContexts(questionnaire.getId());
+                if (!questionnaireContexts.isEmpty() && questionnaireContexts.size() > 0) {
+
+                }
+                RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
+                restQuestionnaireObject.setQuestionnaireId(questionnaire.getId());
+                restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
+                restQuestionnaireObject.setQuestionnaireContexts(questionnaireContexts);
                 jsonObject.put("code", 1);
                 jsonObject.put("msg", "");
-                jsonObject.put("data", questionnaire.getTitle());
+                jsonObject.put("data", restQuestionnaireObject);
             }
         }
         return jsonObject;
     }
 
+    @Transactional
     @Override
     public JSONObject addContext(HttpServletRequest request) {
         TreeMap<String, String> allRequestParam = BaseUtil.getAllRequestParam(request);
         JSONObject jsonObject = new JSONObject();
         String questionnaireId = allRequestParam.get("questionnaireId");
-        String questionnaireContext1 = allRequestParam.get("questionnaireContext1");
-        String questionnaireContext2 = allRequestParam.get("questionnaireContext2");
-        String questionnaireContext3 = allRequestParam.get("questionnaireContext3");
-        String questionnaireContext4 = allRequestParam.get("questionnaireContext4");
+        String title = allRequestParam.get("title");
+        String context = allRequestParam.get("context");
+        String[] titles = title.split(",");
+        String[] contexts = context.split(",");
+        String s=null;
+        String c=null;
         if (questionnaireId.isEmpty()) {
             jsonObject.put("code", 0);
             jsonObject.put("msg", "添加失败");
         } else {
-            int count = questionnaireContextMapper.selectCount(Integer.parseInt(questionnaireId));
-            if (0 <= count && count < 4) {
-                QuestionnaireContext questionnaireContext = new QuestionnaireContext();
-                questionnaireContext.setQuestionnaireId(Integer.parseInt(questionnaireId));
-                questionnaireContext.setContext(questionnaireContext1);
-                questionnaireContext.setState(1);
-                questionnaireContextMapper.insert(questionnaireContext);
-                questionnaireContext.setContext(questionnaireContext2);
-                questionnaireContextMapper.insert(questionnaireContext);
-                questionnaireContext.setContext(questionnaireContext3);
-                questionnaireContextMapper.insert(questionnaireContext);
-                questionnaireContext.setContext(questionnaireContext4);
-                questionnaireContextMapper.insert(questionnaireContext);
-                jsonObject.put("code", 1);
-                jsonObject.put("msg", "添加成功");
-            } else {
-                jsonObject.put("code", 0);
-                jsonObject.put("msg", "该标题已添加题目");
+            int index=0;
+            for (int i = 0; i < titles.length; i++) {
+                s = titles[i];
+                QuestionnaireContextTitle questionnaireContextTitle = new QuestionnaireContextTitle();
+                int restId =0;
+                for (int j = 0; j < contexts.length/titles.length; j++) {
+                    c = contexts[index];
+                    index++;
+                    QuestionnaireContext questionnaireContext = new QuestionnaireContext();
+
+
+                    questionnaireContext.setQuestionnaireId(Integer.parseInt(questionnaireId));
+                    questionnaireContext.setContext(c);
+                    questionnaireContext.setState(1);
+
+                    questionnaireContextMapper.insertRest(questionnaireContext);
+                    restId=questionnaireContext.getId();
+                }
+                questionnaireContextTitle.setQuestionnaireTitle(s);
+                questionnaireContextTitle.setQuestionnaireContextId(restId);
+                questionnaireContextTitleMapper.insert(questionnaireContextTitle);
             }
+
+            jsonObject.put("code", 1);
+            jsonObject.put("msg", "添加成功");
 
         }
 
@@ -230,7 +248,7 @@ public class TeacherServiceImpl implements TeacherService {
             jsonObject.put("code", 0);
             jsonObject.put("msg", "删除失败");
         } else {
-            int count=0;
+            int count = 0;
             count += questionnaireContextMapper.updateByQuestionnaireId(Integer.parseInt(questionnaireId));
             count += questionnaireMapper.updateByQuestionnaireId(Integer.parseInt(questionnaireId));
             System.out.println(count);

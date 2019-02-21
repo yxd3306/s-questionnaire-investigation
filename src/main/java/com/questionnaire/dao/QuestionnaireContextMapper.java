@@ -23,4 +23,6 @@ public interface QuestionnaireContextMapper {
     int selectCount(@Param("questionnaireId") int questionnaireId);
 
     int updateByQuestionnaireId(@Param("questionnaireId") int questionnaireId);
+
+    int insertRest(QuestionnaireContext questionnaireContext);
 }

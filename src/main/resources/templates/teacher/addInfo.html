@@ -52,125 +52,210 @@
 <nav class="add-body">
     <div class="add-head"></div>
     <div class="add-title">
-        <span class="title" id="title"></span>
+        问卷标题：<span class="title" id="title"></span>
+        <button class="add-title-release">发布问卷</button>
     </div>
     <div class="add-context">
         <button class="add-title-button" id="opener">批量添加题目</button>
     </div>
 
 
-    <div class="add-context-info" id="dialog" title="添加题目">
-        <p>A:<input class="context"/></p>
-        <p>B:<input class="context"/></p>
-        <p>C:<input class="context"/></p>
-        <p>D:<input class="context"/></p>
-        <button class="context-button">提交</button>
-    </div>
-
-
     <!--<div class="add-context-info">
-        A:<input class="context"/>
-        B:<input class="context"/>
-        C:<input class="context"/>
-        D:<input class="context"/>
+        <h2 class="add-context-info-title">
+            <input type="text" class="add-context-info-input" placeholder="题目标题" autocomplete="off"/>
+            <button class="add-context-info-close"></button>
+        </h2>
+        <ul>
+            <li>
+                <input class="add-context-info-checkbox" type="checkbox"/>
+                <input class="add-context-info-input" type="text" placeholder="选项一" autocomplete="off">
+            </li>
+            <li>
+                <input class="add-context-info-checkbox" type="checkbox"/>
+                <input class="add-context-info-input" type="text" placeholder="选项二" autocomplete="off">
+            </li>
+            <li>
+                <input class="add-context-info-checkbox" type="checkbox"/>
+                <input class="add-context-info-input" type="text" placeholder="选项三" autocomplete="off">
+            </li>
+            <li>
+                <input class="add-context-info-checkbox" type="checkbox"/>
+                <input class="add-context-info-input" type="text" placeholder="选项四" autocomplete="off">
+            </li>
+        </ul>
     </div>-->
 </nav>
 
 </body>
 <script type="text/javascript">
-    init();
-
-    add();
-
-
-
-    function init() {
-        $(document).ready(function () {
-            var userName=common.getCookie("teacherUserName");
-            var questionnaireId = common.getCookie("questionnaireId");
-            $('#userInfo').html(userName);
-            var data={
-                questionnaireId:questionnaireId
-            }
-            common.ajaxSend(
-                "/teacher/selectQuestionnaireByKey",
-                data,
-                function (e) {
-                    if(e.code==1){
-                        $('#title').html(e.data)
+    $(function () {
+        var userName = common.getCookie("teacherUserName");
+        var questionnaireId = common.getCookie("questionnaireId");
+        $('#userInfo').html(userName);
+        var data = {
+            questionnaireId: questionnaireId
+        }
+        common.ajaxSend(
+            "/teacher/selectQuestionnaireByKey",
+            data,
+            function (e) {
+                if (e.code == 1) {
+                    var path = window.location.pathname;
+                    var judgePath = RegExp(/queryQuestionnaireById/)
+                    $('#title').html(e.data.questionnaireTitle)
+                    if (judgePath.test(path)) {
+                        // TODO
+                        selectQuestionnaireByKey(e.data.questionnaireContexts);
                     }
-                },function (e) {
 
                 }
-            )
+            }, function (e) {
 
-        });
-
-        $( "#dialog" ).dialog({
-            autoOpen: false,
-            show: {
-                effect: "blind",
-                duration: 1000
-            },
-            hide: {
-                effect: "explode",
-                duration: 1000
             }
+        );
+
+
+        $('#opener').click(function () {
+            $('.add-body').append('<div class="add-context-info">' +
+                '        <h2 class="add-context-info-title">' +
+                '            <input type="text" class="add-context-info-input add-context-info-input-t" placeholder="题目标题" autocomplete="off"/>' +
+                '            <button class="add-context-info-close"></button>' +
+                '        </h2>' +
+                '        <ul>' +
+                '            <li>' +
+                '                <input class="add-context-info-checkbox" type="checkbox"/>' +
+                '                <input class="add-context-info-input add-context-info-input-c" type="text" placeholder="选项一" autocomplete="off">' +
+                '            </li>' +
+                '            <li>' +
+                '                <input class="add-context-info-checkbox" type="checkbox"/>' +
+                '                <input class="add-context-info-input add-context-info-input-c" type="text" placeholder="选项二" autocomplete="off">' +
+                '            </li>' +
+                '            <li>' +
+                '                <input class="add-context-info-checkbox" type="checkbox"/>' +
+                '                <input class="add-context-info-input add-context-info-input-c" type="text" placeholder="选项三" autocomplete="off">' +
+                '            </li>' +
+                '            <li>' +
+                '                <input class="add-context-info-checkbox" type="checkbox"/>' +
+                '                <input class="add-context-info-input add-context-info-input-c" type="text" placeholder="选项四" autocomplete="off">' +
+                '            </li>' +
+                '        </ul>' +
+                '    </div>')
         });
 
-        $( "#opener" ).click(function() {
-            $( "#dialog" ).dialog( "open" );
-        });
-    }
+        $('.add-body').on('click', '.add-context-info-close', function () {
+            $(this).parent().parent().addClass('hide-mode')
+        })
+
+        $('.add-body').on('mouseenter', '.add-context-info-input', function () {
+            $(this).addClass('over');
+        })
+        $('.add-body').on('mouseleave', '.add-context-info-input', function () {
+            $(this).removeClass('over');
+        })
+        $('.add-body').on('focus', 'input', function () {
+            $(this).addClass('focus');
+        })
+        $('.add-body').on('blur', 'input', function () {
+            $(this).removeClass('focus')
+        })
+
+        $('.add-title-release').click(function () {
+            add();
+        })
+    })
+
+    /*queryQuestionnaireById()
+
+
+    function queryQuestionnaireById() {
+        var path=window.location.pathname
+        var pathArr=new Array();
+        var questionnaireId='';
+        pathArr=path.split('/');
+        questionnaireId=pathArr[pathArr.length-1];
+    }*/
+
 
     function add() {
 
-        $('.context-button').on('click',function () {
 
-            var input=$('.context');
-            var v1,v2,v3,v4='';
-            var questionnaireId = common.getCookie("questionnaireId");
+        var inputT = $('.add-context-info-input-t');
+        var questionnaireId = common.getCookie("questionnaireId");
+        var title="";
+        var context="";
+
+        for (var i = 0; i < inputT.length; i++) {
+            title+=$(inputT[i]).val()+',';
+            var nodes=new Array();
+            nodes=$(inputT[i]).parent().next().children().children('.add-context-info-input-c');
+            for (var j = 0; j < nodes.length; j++) {
+                context+=$(nodes[j]).val()+','
+            }
+        }
 
 
-            for(var i=0;i<input.length;i++){
-                if(i==0){
-                    v1=$(input[i]).val()
-                }else if(i==1){
-                    v2=$(input[i]).val()
-                }else if(i==2){
-                    v3=$(input[i]).val()
-                }else if(i==3){
-                    v4=$(input[i]).val()
+        title=title.replace(/[,，]$/, " ")
+        context=context.replace(/[,，]$/, " ")
+        console.log(title+"，"+context)
+
+        var data = {
+            questionnaireId: questionnaireId,
+            title:title,
+            context: context,
+        }
+        common.ajaxSend(
+            "/teacher/addContext",
+            data,
+            function (e) {
+                if (e.code == 1) {
+                    window.location.href = '/teacher/index.html'
+                } else {
+                    alert(e.msg)
+                    $("#dialog").dialog("close");
                 }
+            },
+            function (e) {
 
             }
-            var data={
-                questionnaireId:questionnaireId,
-                questionnaireContext1:v1,
-                questionnaireContext2:v2,
-                questionnaireContext3:v3,
-                questionnaireContext4:v4
-            }
-            common.ajaxSend(
-                "/teacher/addContext",
-                data,
-                function (e) {
-                    if(e.code==1){
-                        window.location.href='/teacher/index.html'
-                    }else{
-                        alert(e.msg)
-                        $( "#dialog" ).dialog( "close" );
-                    }
-                },
-                function (e) {
+        )
 
-                }
-            )
-
-        })
     }
 
-
+    function selectQuestionnaireByKey(contexts){
+        if(0<contexts.length){
+            var html='';
+            $.each(contexts,function (i,v) {
+                html='<div class="add-context-info">' +
+                    '        <h2 class="add-context-info-title">' +
+                    '            <input type="text" class="add-context-info-input" placeholder="题目标题" value="'+v.comtextTitle+'" autocomplete="off"/>' +
+                    '            <button class="add-context-info-close"></button>' +
+                    '        </h2>' +
+                    '        <ul>' +
+                    '            <li>' +
+                    '                <input class="add-context-info-checkbox" type="checkbox"/>' +
+                    '                <input class="add-context-info-input" type="text" placeholder="选项一" value="'+v.comtextTitle+'" autocomplete="off">' +
+                    '            </li>' +
+                    '            <li>' +
+                    '                <input class="add-context-info-checkbox" type="checkbox"/>' +
+                    '                <input class="add-context-info-input" type="text" placeholder="选项二" value="'+v.context+'" autocomplete="off">' +
+                    '            </li>' +
+                    '            <li>' +
+                    '                <input class="add-context-info-checkbox" type="checkbox"/>' +
+                    '                <input class="add-context-info-input" type="text" placeholder="选项三" value="'+v.context+'" autocomplete="off">' +
+                    '            </li>' +
+                    '            <li>' +
+                    '                <input class="add-context-info-checkbox" type="checkbox"/>' +
+                    '                <input class="add-context-info-input" type="text" placeholder="选项四" value="'+v.context+'" autocomplete="off">' +
+                    '            </li>' +
+                    '        </ul>' +
+                    '    </div>';
+                console.log(v.comtextTitle)
+                console.log(v.context)
+                console.log(v.questionnaireId)
+                console.log(v.id)
+            })
+        }
+    }
 
 
 </script>

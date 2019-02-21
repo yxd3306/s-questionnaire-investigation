@@ -3,13 +3,12 @@
 <mapper namespace="com.questionnaire.dao.QuestionnaireContextMapper">
     <resultMap id="BaseResultMap" type="com.questionnaire.entity.QuestionnaireContext">
         <id column="id" property="id" jdbcType="INTEGER"/>
-        <result column="comtext_title" property="comtextTitle" jdbcType="VARCHAR"/>
         <result column="context" property="context" jdbcType="VARCHAR"/>
         <result column="questionnaire_id" property="questionnaireId" jdbcType="INTEGER"/>
         <result column="state" property="state" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, comtext_title, context, questionnaire_id, state
+    id, context, questionnaire_id, state
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -22,19 +21,16 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
     <insert id="insert" parameterType="com.questionnaire.entity.QuestionnaireContext">
-    insert into t_questionnaire_context (id, comtext_title, context, 
-      questionnaire_id, state)
-    values (#{id,jdbcType=INTEGER}, #{comtextTitle,jdbcType=VARCHAR}, #{context,jdbcType=VARCHAR}, 
-      #{questionnaireId,jdbcType=INTEGER}, #{state,jdbcType=INTEGER})
+    insert into t_questionnaire_context (id, context, questionnaire_id, 
+      state)
+    values (#{id,jdbcType=INTEGER}, #{context,jdbcType=VARCHAR}, #{questionnaireId,jdbcType=INTEGER}, 
+      #{state,jdbcType=INTEGER})
   </insert>
     <insert id="insertSelective" parameterType="com.questionnaire.entity.QuestionnaireContext">
         insert into t_questionnaire_context
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 id,
-            </if>
-            <if test="comtextTitle != null">
-                comtext_title,
             </if>
             <if test="context != null">
                 context,
@@ -50,9 +46,6 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
-            <if test="comtextTitle != null">
-                #{comtextTitle,jdbcType=VARCHAR},
-            </if>
             <if test="context != null">
                 #{context,jdbcType=VARCHAR},
             </if>
@@ -67,9 +60,6 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.questionnaire.entity.QuestionnaireContext">
         update t_questionnaire_context
         <set>
-            <if test="comtextTitle != null">
-                comtext_title = #{comtextTitle,jdbcType=VARCHAR},
-            </if>
             <if test="context != null">
                 context = #{context,jdbcType=VARCHAR},
             </if>
@@ -83,19 +73,17 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.questionnaire.entity.QuestionnaireContext">
-        update t_questionnaire_context
-        set comtext_title = #{comtextTitle,jdbcType=VARCHAR},
-          context = #{context,jdbcType=VARCHAR},
-          questionnaire_id = #{questionnaireId,jdbcType=INTEGER},
-          state = #{state,jdbcType=INTEGER}
-        where id = #{id,jdbcType=INTEGER}
+    update t_questionnaire_context
+    set context = #{context,jdbcType=VARCHAR},
+      questionnaire_id = #{questionnaireId,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
   </update>
-
 
     <!--自定义-->
     <select id="selectQuestionnaireContexts" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         from
         t_questionnaire_context
         where questionnaire_id=#{questionnaireId,jdbcType=INTEGER}
@@ -107,11 +95,21 @@
         t_questionnaire_context
         where questionnaire_id=#{questionnaireId,jdbcType=INTEGER} and state!=-1
     </select>
-    <update id="updateByQuestionnaireId" parameterType="java.lang.Integer" >
+    <update id="updateByQuestionnaireId" parameterType="java.lang.Integer">
     update t_questionnaire_context
     set
       state = -1
     where questionnaire_id = #{questionnaireId,jdbcType=INTEGER} and state!=-1
   </update>
 
+
+    <insert id="insertRest" parameterType="com.questionnaire.entity.QuestionnaireContext" >
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_questionnaire_context (id, context, questionnaire_id,
+        state)
+        values (#{id,jdbcType=INTEGER}, #{context,jdbcType=VARCHAR}, #{questionnaireId,jdbcType=INTEGER},
+        #{state,jdbcType=INTEGER})
+    </insert>
 </mapper>
