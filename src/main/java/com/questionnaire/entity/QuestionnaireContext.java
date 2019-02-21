@@ -3,6 +3,8 @@ package com.questionnaire.entity;
 public class QuestionnaireContext {
     private Integer id;
 
+    private String comtextTitle;
+
     private String context;
 
     private Integer questionnaireId;
@@ -15,6 +17,14 @@ public class QuestionnaireContext {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getComtextTitle() {
+        return comtextTitle;
+    }
+
+    public void setComtextTitle(String comtextTitle) {
+        this.comtextTitle = comtextTitle == null ? null : comtextTitle.trim();
     }
 
     public String getContext() {

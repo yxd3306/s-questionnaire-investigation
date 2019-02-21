@@ -6,7 +6,6 @@ import com.questionnaire.dao.QuestionnaireContextMapper;
 import com.questionnaire.dao.QuestionnaireMapper;
 import com.questionnaire.dao.QuestionnaireTypeMapper;
 import com.questionnaire.entity.Questionnaire;
-import com.questionnaire.entity.QuestionnaireContext;
 import com.questionnaire.entity.QuestionnaireType;
 import com.questionnaire.entity.RestQuestionnaireObject;
 import com.questionnaire.teacher.dao.TeacherMapper;
