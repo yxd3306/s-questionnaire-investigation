@@ -103,9 +103,9 @@
                     var path = window.location.pathname;
                     var judgePath = RegExp(/queryQuestionnaireById/)
                     $('#title').html(e.data.questionnaireTitle)
+                    var restData = e.data;
                     if (judgePath.test(path)) {
-                        // TODO
-                        selectQuestionnaireByKey(e.data.questionnaireContexts);
+                        selectQuestionnaireByKey(e.data);
                     }
 
                 }
@@ -181,26 +181,24 @@
 
         var inputT = $('.add-context-info-input-t');
         var questionnaireId = common.getCookie("questionnaireId");
-        var title="";
-        var context="";
+        var title = "";
+        var context = "";
 
         for (var i = 0; i < inputT.length; i++) {
-            title+=$(inputT[i]).val()+',';
-            var nodes=new Array();
-            nodes=$(inputT[i]).parent().next().children().children('.add-context-info-input-c');
+            title += $(inputT[i]).val() + ',';
+            var nodes = new Array();
+            nodes = $(inputT[i]).parent().next().children().children('.add-context-info-input-c');
             for (var j = 0; j < nodes.length; j++) {
-                context+=$(nodes[j]).val()+','
+                context += $(nodes[j]).val() + ','
             }
         }
 
-
-        title=title.replace(/[,，]$/, " ")
-        context=context.replace(/[,，]$/, " ")
-        console.log(title+"，"+context)
+        title = title.replace(/[,，]$/, " ")
+        context = context.replace(/[,，]$/, " ")
 
         var data = {
             questionnaireId: questionnaireId,
-            title:title,
+            title: title,
             context: context,
         }
         common.ajaxSend(
@@ -221,39 +219,40 @@
 
     }
 
-    function selectQuestionnaireByKey(contexts){
-        if(0<contexts.length){
-            var html='';
-            $.each(contexts,function (i,v) {
-                html='<div class="add-context-info">' +
+    function selectQuestionnaireByKey(restData) {
+        if (restData != null) {
+            ;
+            var titleLength = restData.questionnaireContextTitles.length;
+            var contextLength = restData.questionnaireContexts.length;
+            var index = 0;
+
+            for (var i = 0; i < titleLength; i++) {
+                var html = '';
+                html += '<div class="add-context-info">' +
                     '        <h2 class="add-context-info-title">' +
-                    '            <input type="text" class="add-context-info-input" placeholder="题目标题" value="'+v.comtextTitle+'" autocomplete="off"/>' +
-                    '            <button class="add-context-info-close"></button>' +
+                    '            <input type="text" class="add-context-info-input" placeholder="题目标题" autocomplete="off" value="' + restData.questionnaireContextTitles[i].questionnaireTitle + '" disabled="disabled"/>' +
+                    '            <button class="add-context-info-close add-context-info-close-query"></button>' +
                     '        </h2>' +
-                    '        <ul>' +
-                    '            <li>' +
-                    '                <input class="add-context-info-checkbox" type="checkbox"/>' +
-                    '                <input class="add-context-info-input" type="text" placeholder="选项一" value="'+v.comtextTitle+'" autocomplete="off">' +
-                    '            </li>' +
-                    '            <li>' +
-                    '                <input class="add-context-info-checkbox" type="checkbox"/>' +
-                    '                <input class="add-context-info-input" type="text" placeholder="选项二" value="'+v.context+'" autocomplete="off">' +
-                    '            </li>' +
-                    '            <li>' +
-                    '                <input class="add-context-info-checkbox" type="checkbox"/>' +
-                    '                <input class="add-context-info-input" type="text" placeholder="选项三" value="'+v.context+'" autocomplete="off">' +
-                    '            </li>' +
-                    '            <li>' +
-                    '                <input class="add-context-info-checkbox" type="checkbox"/>' +
-                    '                <input class="add-context-info-input" type="text" placeholder="选项四" value="'+v.context+'" autocomplete="off">' +
-                    '            </li>' +
-                    '        </ul>' +
+                    '        <ul>';
+                for (var j = 0; j < contextLength / titleLength; j++) {
+                    /*console.log(restData.questionnaireContexts[index])*/
+
+                    html += '            <li>' +
+                        '                <input class="add-context-info-checkbox" type="checkbox"/>' +
+                        '                <input class="add-context-info-input" type="text" placeholder="选项'+j+'" autocomplete="off" value="'+restData.questionnaireContexts[index].context+'" disabled="disabled">' +
+                        '            </li>';
+                    index++;
+                }
+                html+= '        </ul>' +
                     '    </div>';
-                console.log(v.comtextTitle)
-                console.log(v.context)
-                console.log(v.questionnaireId)
-                console.log(v.id)
-            })
+                $('.add-body').append(html);
+
+
+            }
+            var b = $('.add-title-release')
+            if (restData.questionnaireState == 1)
+                $(b).html('进行中')
+
         }
     }
 

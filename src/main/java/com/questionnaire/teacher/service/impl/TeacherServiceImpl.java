@@ -118,7 +118,6 @@ public class TeacherServiceImpl implements TeacherService {
                 QuestionnaireType questionnaireType = questionnaireTypeMapper.selectQuestionnaires(questionnaire.getId());
 
                 if (!questionnaireContexts.isEmpty() && questionnaireContexts.size() > 0) {
-
                     restQuestionnaireObject.setQuestionnaireContexts(questionnaireContexts);
                     if (null != questionnaireType) {
                         restQuestionnaireObject.setQuestionnaireTypeId(questionnaireType.getId());
@@ -176,13 +175,19 @@ public class TeacherServiceImpl implements TeacherService {
                 jsonObject.put("msg", "无相关问卷");
             } else {
                 List<QuestionnaireContext> questionnaireContexts = questionnaireContextMapper.selectQuestionnaireContexts(questionnaire.getId());
-                if (!questionnaireContexts.isEmpty() && questionnaireContexts.size() > 0) {
-
-                }
+                List<QuestionnaireContextTitle> questionnaireContextTitles = new ArrayList<>();
                 RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
+                for (QuestionnaireContext questionnaireContext : questionnaireContexts) {
+                    QuestionnaireContextTitle questionnaireContextTitle = questionnaireContextTitleMapper.selectByQuestionnaireContextKey(questionnaireContext.getId());
+                    if(null!=questionnaireContextTitle){
+                        questionnaireContextTitles.add(questionnaireContextTitle);
+                    }
+                }
                 restQuestionnaireObject.setQuestionnaireId(questionnaire.getId());
                 restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
+                restQuestionnaireObject.setQuestionnaireState(questionnaire.getState());
                 restQuestionnaireObject.setQuestionnaireContexts(questionnaireContexts);
+                restQuestionnaireObject.setQuestionnaireContextTitles(questionnaireContextTitles);
                 jsonObject.put("code", 1);
                 jsonObject.put("msg", "");
                 jsonObject.put("data", restQuestionnaireObject);

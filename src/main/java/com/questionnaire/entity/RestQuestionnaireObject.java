@@ -21,6 +21,16 @@ public class RestQuestionnaireObject {
 
     private List<QuestionnaireContext> questionnaireContexts;
 
+    public List<QuestionnaireContextTitle> getQuestionnaireContextTitles() {
+        return QuestionnaireContextTitles;
+    }
+
+    public void setQuestionnaireContextTitles(List<QuestionnaireContextTitle> questionnaireContextTitles) {
+        QuestionnaireContextTitles = questionnaireContextTitles;
+    }
+
+    private List<QuestionnaireContextTitle> QuestionnaireContextTitles;
+
     public Integer getQuestionnaireId() {
         return questionnaireId;
     }

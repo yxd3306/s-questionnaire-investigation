@@ -72,7 +72,12 @@
 
 
     <!--自定义-->
-
+    <select id="selectByQuestionnaireContextKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from t_questionnaire_context_title
+        where questionnaire_context_id = #{questionnaireContextId,jdbcType=INTEGER}
+    </select>
 
 
 </mapper>

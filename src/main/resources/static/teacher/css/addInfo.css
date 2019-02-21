@@ -257,3 +257,9 @@ button{
     height: 50px;
     float: right;
 }
+.add-body .add-context-info  .add-context-info-close-query{
+    display: none;
+}
+.add-query{
+    display: none;
+}
