@@ -54,6 +54,21 @@ public class DBApi {
     public JSONObject deleteQuestionnaireById(HttpServletRequest request){
         return teacherService.deleteQuestionnaireById(request);
     }
+    @RequestMapping(value = "/teacher/deleteContextByTitleId",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject deleteContextByTitleId(HttpServletRequest request){
+        return teacherService.deleteContextByTitleId(request);
+    }
+    @RequestMapping(value = "/teacher/updateContext",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject updateContext(HttpServletRequest request){
+        return teacherService.updateContext(request);
+    }
+    @RequestMapping(value = "/teacher/releaseQuestionnaire",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject releaseQuestionnaire(HttpServletRequest request){
+        return teacherService.releaseQuestionnaire(request);
+    }
 
 
 

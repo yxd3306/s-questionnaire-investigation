@@ -5,7 +5,9 @@ public class QuestionnaireContextTitle {
 
     private String questionnaireTitle;
 
-    private Integer questionnaireContextId;
+    private Integer questionnaireId;
+
+    private Integer state;
 
     public Integer getId() {
         return id;
@@ -23,11 +25,19 @@ public class QuestionnaireContextTitle {
         this.questionnaireTitle = questionnaireTitle == null ? null : questionnaireTitle.trim();
     }
 
-    public Integer getQuestionnaireContextId() {
-        return questionnaireContextId;
+    public Integer getQuestionnaireId() {
+        return questionnaireId;
     }
 
-    public void setQuestionnaireContextId(Integer questionnaireContextId) {
-        this.questionnaireContextId = questionnaireContextId;
+    public void setQuestionnaireId(Integer questionnaireId) {
+        this.questionnaireId = questionnaireId;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 }

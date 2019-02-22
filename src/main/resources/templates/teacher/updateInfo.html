@@ -52,8 +52,8 @@
 <nav class="add-body">
     <div class="add-head"></div>
     <div class="add-title">
-        问卷标题：<span class="title" id="title"></span>
-        <button class="add-title-release hide-mode">添加问卷</button>
+        问卷标题：<input class="title-input" id="title" type="text"/>
+        <button class="add-title-release">发布问卷</button>
     </div>
     <div class="add-context">
         <button class="add-title-button" id="opener">批量添加题目</button>
@@ -67,34 +67,33 @@
     $(function () {
         var userName = common.getCookie("teacherUserName");
         var questionnaireId = common.getCookie("questionnaireId");
-        $('#userInfo').html(userName);
+
         var path = window.location.pathname;
-        var judgePath = RegExp(/queryQuestionnaireById/);
+        var judgePath = RegExp(/updateQuestionnaireById/);
         var data ='';
         if(judgePath.test(path)){
             data={
                 questionnaireId: path.split("/")[3]
             }
-        }else{
-            $('.add-title-release').removeClass('hide-mode')
-            data={
+        }else {
+            data = {
                 questionnaireId: questionnaireId
             }
         }
-
+        $('#userInfo').html(userName);
         common.ajaxSend(
             "/teacher/selectQuestionnaireByKey",
             data,
             function (e) {
                 if (e.code == 1) {
-                    $('#title').html(e.data.questionnaireTitle)
+
+                    $('#title').val(e.data.questionnaireTitle)
                     if (judgePath.test(path)) {
-                        console.log()
-                        $('.add-title-release').addClass('hide-mode')
                         selectQuestionnaireByKey(e.data);
                     }
 
-                }
+                } else
+                    window.location.href = '/teacher/index.html';
             }, function (e) {
 
             }
@@ -125,13 +124,23 @@
         });
 
         $('.add-body').on('click', '.add-context-info-close', function () {
-            $(this).parent().parent().addClass('hide-mode')
+            var titleId = $(this).attr('data-title-id')
+            var title = $(this).prev().val();
+            var data = {
+                titleId: titleId,
+                title: title
+            }
+            if (titleId != undefined)
+            // 根据id删除
+                deleteContextByTitleId(data, $(this))
+            else
+                $(this).parent().parent().addClass('hide-mode')
         })
 
-        $('.add-body').on('mouseenter', '.add-context-info-input', function () {
+        $('.add-body').on('mouseenter', 'input', function () {
             $(this).addClass('over');
         })
-        $('.add-body').on('mouseleave', '.add-context-info-input', function () {
+        $('.add-body').on('mouseleave', 'input', function () {
             $(this).removeClass('over');
         })
         $('.add-body').on('focus', 'input', function () {
@@ -142,32 +151,25 @@
         })
 
         $('.add-title-release').click(function () {
-            add();
+            update()
         })
     })
 
-    /*queryQuestionnaireById()
 
-
-    function queryQuestionnaireById() {
-        var path=window.location.pathname
-        var pathArr=new Array();
-        var questionnaireId='';
-        pathArr=path.split('/');
-        questionnaireId=pathArr[pathArr.length-1];
-    }*/
-
-
-    function add() {
+    function update() {
 
 
         var inputT = $('.add-context-info-input-t');
         var questionnaireId = common.getCookie("questionnaireId");
+        var questionnaireTitle = $('#title').val();
+        var titleId = "";
         var title = "";
         var context = "";
 
         for (var i = 0; i < inputT.length; i++) {
             title += $(inputT[i]).val() + ',';
+            if($(inputT[i]).attr('data-title-id')!=undefined)
+                titleId += $(inputT[i]).attr('data-title-id') + ',';
             var nodes = new Array();
             nodes = $(inputT[i]).parent().next().children().children('.add-context-info-input-c');
             for (var j = 0; j < nodes.length; j++) {
@@ -177,18 +179,23 @@
 
         title = title.replace(/[,，]$/, " ")
         context = context.replace(/[,，]$/, " ")
+        titleId = titleId.replace(/[,，]$/, " ")
+
+
 
         var data = {
             questionnaireId: questionnaireId,
+            questionnaireTitle:questionnaireTitle,
             title: title,
             context: context,
+            titleId:titleId
         }
         common.ajaxSend(
-            "/teacher/addContext",
+            "/teacher/updateContext",
             data,
             function (e) {
                 if (e.code == 1) {
-                    window.location.href = '/teacher/index.html'
+                    window.history.go(-1)
                 } else {
                     alert(e.msg)
                     $("#dialog").dialog("close");
@@ -203,7 +210,6 @@
 
     function selectQuestionnaireByKey(restData) {
         if (restData != null) {
-            ;
             var titleLength = restData.questionnaireContextTitles.length;
             var contextLength = restData.questionnaireContexts.length;
             var index = 0;
@@ -212,19 +218,18 @@
                 var html = '';
                 html += '<div class="add-context-info">' +
                     '        <h2 class="add-context-info-title">' +
-                    '            <input type="text" class="add-context-info-input" placeholder="题目标题" autocomplete="off" value="' + restData.questionnaireContextTitles[i].questionnaireTitle + '" disabled="disabled"/>' +
-                    '            <button class="add-context-info-close add-context-info-close-query"></button>' +
+                    '            <input type="text" class="add-context-info-input add-context-info-input-t" placeholder="题目标题" autocomplete="off" value="' + restData.questionnaireContextTitles[i].questionnaireTitle + '" data-title-id="' + restData.questionnaireContextTitles[i].id + '"/>' +
+                    '            <button class="add-context-info-close" data-title-id="' + restData.questionnaireContextTitles[i].id + '"></button>' +
                     '        </h2>' +
                     '        <ul>';
                 for (var j = 0; j < contextLength / titleLength; j++) {
-                    /*console.log(restData.questionnaireContexts[index])*/
 
                     html += '            <li>' +
-                        '                <input class="add-context-info-input" type="text" placeholder="选项'+j+'" autocomplete="off" value="'+restData.questionnaireContexts[index].context+'" disabled="disabled">' +
+                        '                <input class="add-context-info-input add-context-info-input-c" type="text" placeholder="选项' + j + '" autocomplete="off" value="' + restData.questionnaireContexts[index].context + '">' +
                         '            </li>';
                     index++;
                 }
-                html+= '        </ul>' +
+                html += '        </ul>' +
                     '    </div>';
                 $('.add-body').append(html);
 
@@ -232,9 +237,25 @@
             }
             var b = $('.add-title-release')
             if (restData.questionnaireState == 1)
-                $(b).html('进行中')
+                $(b).html('修改')
 
         }
+    }
+
+    function deleteContextByTitleId(data, obj) {
+        common.ajaxSend(
+            '/teacher/deleteContextByTitleId',
+            data,
+            function (e) {
+                if (e.code == 1)
+                    obj.parent().parent().addClass('hide-mode');
+                else
+                    alert(e.msg);
+            },
+            function (e) {
+
+            }
+        )
     }
 
 

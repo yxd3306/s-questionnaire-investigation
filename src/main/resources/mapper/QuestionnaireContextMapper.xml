@@ -5,10 +5,11 @@
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="context" property="context" jdbcType="VARCHAR"/>
         <result column="questionnaire_id" property="questionnaireId" jdbcType="INTEGER"/>
+        <result column="questionnaire_context_title_id" property="questionnaireContextTitleId" jdbcType="INTEGER"/>
         <result column="state" property="state" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, context, questionnaire_id, state
+    id, context, questionnaire_id, questionnaire_context_title_id, state
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -22,9 +23,9 @@
   </delete>
     <insert id="insert" parameterType="com.questionnaire.entity.QuestionnaireContext">
     insert into t_questionnaire_context (id, context, questionnaire_id, 
-      state)
+      questionnaire_context_title_id, state)
     values (#{id,jdbcType=INTEGER}, #{context,jdbcType=VARCHAR}, #{questionnaireId,jdbcType=INTEGER}, 
-      #{state,jdbcType=INTEGER})
+      #{questionnaireContextTitleId,jdbcType=INTEGER}, #{state,jdbcType=INTEGER})
   </insert>
     <insert id="insertSelective" parameterType="com.questionnaire.entity.QuestionnaireContext">
         insert into t_questionnaire_context
@@ -37,6 +38,9 @@
             </if>
             <if test="questionnaireId != null">
                 questionnaire_id,
+            </if>
+            <if test="questionnaireContextTitleId != null">
+                questionnaire_context_title_id,
             </if>
             <if test="state != null">
                 state,
@@ -52,6 +56,9 @@
             <if test="questionnaireId != null">
                 #{questionnaireId,jdbcType=INTEGER},
             </if>
+            <if test="questionnaireContextTitleId != null">
+                #{questionnaireContextTitleId,jdbcType=INTEGER},
+            </if>
             <if test="state != null">
                 #{state,jdbcType=INTEGER},
             </if>
@@ -66,6 +73,9 @@
             <if test="questionnaireId != null">
                 questionnaire_id = #{questionnaireId,jdbcType=INTEGER},
             </if>
+            <if test="questionnaireContextTitleId != null">
+                questionnaire_context_title_id = #{questionnaireContextTitleId,jdbcType=INTEGER},
+            </if>
             <if test="state != null">
                 state = #{state,jdbcType=INTEGER},
             </if>
@@ -76,6 +86,7 @@
     update t_questionnaire_context
     set context = #{context,jdbcType=VARCHAR},
       questionnaire_id = #{questionnaireId,jdbcType=INTEGER},
+      questionnaire_context_title_id = #{questionnaireContextTitleId,jdbcType=INTEGER},
       state = #{state,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -86,7 +97,7 @@
         <include refid="Base_Column_List"/>
         from
         t_questionnaire_context
-        where questionnaire_id=#{questionnaireId,jdbcType=INTEGER}
+        where questionnaire_context_title_id=#{questionnaireContextTitleId,jdbcType=INTEGER} and state!=-1
     </select>
     <select id="selectCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
         select
@@ -101,6 +112,12 @@
       state = -1
     where questionnaire_id = #{questionnaireId,jdbcType=INTEGER} and state!=-1
   </update>
+    <update id="updateByQuestionnaireContextTitleId" parameterType="java.lang.Integer">
+    update t_questionnaire_context
+    set
+      state = -1
+    where questionnaire_context_title_id = #{questionnaireContextTitleId,jdbcType=INTEGER} and state!=-1
+  </update>
 
 
     <insert id="insertRest" parameterType="com.questionnaire.entity.QuestionnaireContext" >
@@ -108,8 +125,10 @@
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into t_questionnaire_context (id, context, questionnaire_id,
-        state)
+        questionnaire_context_title_id, state)
         values (#{id,jdbcType=INTEGER}, #{context,jdbcType=VARCHAR}, #{questionnaireId,jdbcType=INTEGER},
-        #{state,jdbcType=INTEGER})
+        #{questionnaireContextTitleId,jdbcType=INTEGER}, #{state,jdbcType=INTEGER})
     </insert>
+
+
 </mapper>

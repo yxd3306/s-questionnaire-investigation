@@ -66,10 +66,13 @@ public class LoginApi {
         return null;
     }
 
-    @RequestMapping("/teacher/queryQuestionnaireById/{questionnaireId}")
-    public String toLoginPage(@PathVariable Integer questionnaireId){
+    @RequestMapping("/teacher/{queryQuestionnaireById}/{questionnaireId}")
+    public String toLoginPage(@PathVariable String queryQuestionnaireById,@PathVariable Integer questionnaireId){
         if(null!= questionnaireId && 0<=questionnaireId){
-            return "/teacher/addInfo.html";
+            if("queryQuestionnaireById".equals(queryQuestionnaireById))
+                return "/teacher/addInfo.html";
+            else if("updateQuestionnaireById".equals(queryQuestionnaireById))
+                return "/teacher/updateInfo.html";
         }
         return null;
     }

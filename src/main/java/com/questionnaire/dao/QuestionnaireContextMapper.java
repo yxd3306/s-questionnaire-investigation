@@ -18,11 +18,13 @@ public interface QuestionnaireContextMapper {
 
     int updateByPrimaryKey(QuestionnaireContext record);
 
-    List<QuestionnaireContext> selectQuestionnaireContexts(@Param("questionnaireId") Integer questionnaireId);
+    List<QuestionnaireContext> selectQuestionnaireContexts(@Param("questionnaireContextTitleId") Integer questionnaireContextTitleId);
 
     int selectCount(@Param("questionnaireId") int questionnaireId);
 
     int updateByQuestionnaireId(@Param("questionnaireId") int questionnaireId);
 
     int insertRest(QuestionnaireContext questionnaireContext);
+
+    int updateByQuestionnaireContextTitleId(QuestionnaireContext questionnaireContext);
 }

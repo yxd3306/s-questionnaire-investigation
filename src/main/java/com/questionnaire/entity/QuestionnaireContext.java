@@ -7,6 +7,8 @@ public class QuestionnaireContext {
 
     private Integer questionnaireId;
 
+    private Integer questionnaireContextTitleId;
+
     private Integer state;
 
     public Integer getId() {
@@ -31,6 +33,14 @@ public class QuestionnaireContext {
 
     public void setQuestionnaireId(Integer questionnaireId) {
         this.questionnaireId = questionnaireId;
+    }
+
+    public Integer getQuestionnaireContextTitleId() {
+        return questionnaireContextTitleId;
+    }
+
+    public void setQuestionnaireContextTitleId(Integer questionnaireContextTitleId) {
+        this.questionnaireContextTitleId = questionnaireContextTitleId;
     }
 
     public Integer getState() {

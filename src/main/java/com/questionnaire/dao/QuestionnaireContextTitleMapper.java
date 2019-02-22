@@ -3,6 +3,8 @@ package com.questionnaire.dao;
 import com.questionnaire.entity.QuestionnaireContextTitle;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 public interface QuestionnaireContextTitleMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -17,4 +19,10 @@ public interface QuestionnaireContextTitleMapper {
     int updateByPrimaryKey(QuestionnaireContextTitle record);
 
     QuestionnaireContextTitle selectByQuestionnaireContextKey(@Param("questionnaireContextId") Integer questionnaireContextId);
+
+    int insertRest(QuestionnaireContextTitle questionnaireContextTitle);
+
+    List<QuestionnaireContextTitle> selectQuestionnaireContextTitles(@Param("questionnaireId") int questionnaireId);
+
+    int updateByQuestionnaireId(@Param("questionnaireId") int questionnaireId);
 }

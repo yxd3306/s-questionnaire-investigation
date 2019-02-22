@@ -204,7 +204,7 @@ button{
 }
 .add-body .add-context-info .add-context-info-title .add-context-info-input{
     border: none;
-    width: 625px;
+    width: 600px;
     height: 30px;
     border-radius: 3px;
     text-indent: 6px;
@@ -238,7 +238,7 @@ button{
     margin-right: 50px;
     float: right;
 }
-.add-body .hide-mode{
+.hide-mode{
     display: none;
 }
 .add-body .add-context-info ul li{
@@ -253,7 +253,7 @@ button{
 
 .add-body .add-title .add-title-release{
     margin-right: 50px;
-    width: 70px;
+    width: 90px;
     height: 50px;
     float: right;
 }
@@ -263,3 +263,16 @@ button{
 .add-query{
     display: none;
 }
+
+.title-input{
+    border: none;
+    width: 600px;
+    height: 50px;
+    border-radius: 3px;
+    text-indent: 6px;
+    font-size: 26px;
+    color: #ff0000;
+    outline: none;
+}
+
+

@@ -11,7 +11,7 @@
  Target Server Version : 50642
  File Encoding         : 65001
 
- Date: 21/02/2019 20:32:13
+ Date: 22/02/2019 20:35:31
 */
 
 SET NAMES utf8mb4;
@@ -28,12 +28,18 @@ CREATE TABLE `t_questionnaire`  (
   `submit_id` int(11) NULL DEFAULT NULL COMMENT '问卷提交人',
   `state` int(11) NULL DEFAULT NULL COMMENT '问卷状态：-1:删除 0:已完成 1:创建未提交 2:提交未评测 ',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 31 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 68 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of t_questionnaire
 -- ----------------------------
-INSERT INTO `t_questionnaire` VALUES (30, 'java', 4, NULL, 1);
+INSERT INTO `t_questionnaire` VALUES (61, '1', 5, NULL, -1);
+INSERT INTO `t_questionnaire` VALUES (62, 'ad', 5, NULL, -1);
+INSERT INTO `t_questionnaire` VALUES (63, '1', 5, NULL, 2);
+INSERT INTO `t_questionnaire` VALUES (64, '1', 5, NULL, 2);
+INSERT INTO `t_questionnaire` VALUES (65, '123', 5, NULL, 2);
+INSERT INTO `t_questionnaire` VALUES (66, '1', 5, NULL, 2);
+INSERT INTO `t_questionnaire` VALUES (67, '1', 5, NULL, 2);
 
 -- ----------------------------
 -- Table structure for t_questionnaire_context
@@ -43,21 +49,46 @@ CREATE TABLE `t_questionnaire_context`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `context` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `questionnaire_id` int(11) NULL DEFAULT NULL COMMENT '关联问卷id',
+  `questionnaire_context_title_id` int(11) NULL DEFAULT NULL,
   `state` int(11) NULL DEFAULT NULL COMMENT '0：已完成 1：进行中 2：已完成 3：草稿',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 187 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 403 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of t_questionnaire_context
 -- ----------------------------
-INSERT INTO `t_questionnaire_context` VALUES (179, '1', 30, 1);
-INSERT INTO `t_questionnaire_context` VALUES (180, '2', 30, 1);
-INSERT INTO `t_questionnaire_context` VALUES (181, '3', 30, 1);
-INSERT INTO `t_questionnaire_context` VALUES (182, '4', 30, 1);
-INSERT INTO `t_questionnaire_context` VALUES (183, 'a', 30, 1);
-INSERT INTO `t_questionnaire_context` VALUES (184, 'b', 30, 1);
-INSERT INTO `t_questionnaire_context` VALUES (185, 'c', 30, 1);
-INSERT INTO `t_questionnaire_context` VALUES (186, 'd', 30, 1);
+INSERT INTO `t_questionnaire_context` VALUES (371, '2', 61, 70, -1);
+INSERT INTO `t_questionnaire_context` VALUES (372, '3', 61, 70, -1);
+INSERT INTO `t_questionnaire_context` VALUES (373, '4', 61, 70, -1);
+INSERT INTO `t_questionnaire_context` VALUES (374, '5', 61, 70, -1);
+INSERT INTO `t_questionnaire_context` VALUES (375, '2', 61, 71, -1);
+INSERT INTO `t_questionnaire_context` VALUES (376, '2', 61, 71, -1);
+INSERT INTO `t_questionnaire_context` VALUES (377, '2', 61, 71, -1);
+INSERT INTO `t_questionnaire_context` VALUES (378, '2', 61, 71, -1);
+INSERT INTO `t_questionnaire_context` VALUES (379, 'asda', 62, 72, -1);
+INSERT INTO `t_questionnaire_context` VALUES (380, 'asdas', 62, 72, -1);
+INSERT INTO `t_questionnaire_context` VALUES (381, 'asdas', 62, 72, -1);
+INSERT INTO `t_questionnaire_context` VALUES (382, 'dasda', 62, 72, -1);
+INSERT INTO `t_questionnaire_context` VALUES (383, '1', 63, 73, 1);
+INSERT INTO `t_questionnaire_context` VALUES (384, '1', 63, 73, 1);
+INSERT INTO `t_questionnaire_context` VALUES (385, '1', 63, 73, 1);
+INSERT INTO `t_questionnaire_context` VALUES (386, '1', 63, 73, 1);
+INSERT INTO `t_questionnaire_context` VALUES (387, '1', 64, 74, 1);
+INSERT INTO `t_questionnaire_context` VALUES (388, '1', 64, 74, 1);
+INSERT INTO `t_questionnaire_context` VALUES (389, '1', 64, 74, 1);
+INSERT INTO `t_questionnaire_context` VALUES (390, '1', 64, 74, 1);
+INSERT INTO `t_questionnaire_context` VALUES (391, '1', 65, 75, 1);
+INSERT INTO `t_questionnaire_context` VALUES (392, '1', 65, 75, 1);
+INSERT INTO `t_questionnaire_context` VALUES (393, '1', 65, 75, 1);
+INSERT INTO `t_questionnaire_context` VALUES (394, '1', 65, 75, 1);
+INSERT INTO `t_questionnaire_context` VALUES (395, '1', 66, 76, 1);
+INSERT INTO `t_questionnaire_context` VALUES (396, '1', 66, 76, 1);
+INSERT INTO `t_questionnaire_context` VALUES (397, '1', 66, 76, 1);
+INSERT INTO `t_questionnaire_context` VALUES (398, '1', 66, 76, 1);
+INSERT INTO `t_questionnaire_context` VALUES (399, '1', 67, 77, 1);
+INSERT INTO `t_questionnaire_context` VALUES (400, '1', 67, 77, 1);
+INSERT INTO `t_questionnaire_context` VALUES (401, '1', 67, 77, 1);
+INSERT INTO `t_questionnaire_context` VALUES (402, '1', 67, 77, 1);
 
 -- ----------------------------
 -- Table structure for t_questionnaire_context_title
@@ -66,15 +97,22 @@ DROP TABLE IF EXISTS `t_questionnaire_context_title`;
 CREATE TABLE `t_questionnaire_context_title`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `questionnaire_title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `questionnaire_context_id` int(11) NULL DEFAULT NULL,
+  `questionnaire_id` int(11) NULL DEFAULT NULL,
+  `state` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 78 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of t_questionnaire_context_title
 -- ----------------------------
-INSERT INTO `t_questionnaire_context_title` VALUES (22, 'java1', 182);
-INSERT INTO `t_questionnaire_context_title` VALUES (23, 'java2', 186);
+INSERT INTO `t_questionnaire_context_title` VALUES (70, '1', 61, -1);
+INSERT INTO `t_questionnaire_context_title` VALUES (71, '2', 61, -1);
+INSERT INTO `t_questionnaire_context_title` VALUES (72, '789', 62, -1);
+INSERT INTO `t_questionnaire_context_title` VALUES (73, '1', 63, 1);
+INSERT INTO `t_questionnaire_context_title` VALUES (74, '1', 64, 1);
+INSERT INTO `t_questionnaire_context_title` VALUES (75, '1', 65, 1);
+INSERT INTO `t_questionnaire_context_title` VALUES (76, '1', 66, 1);
+INSERT INTO `t_questionnaire_context_title` VALUES (77, '1', 67, 1);
 
 -- ----------------------------
 -- Table structure for t_questionnaire_type
@@ -120,15 +158,12 @@ CREATE TABLE `t_teacher`  (
   `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `state` int(11) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of t_teacher
 -- ----------------------------
-INSERT INTO `t_teacher` VALUES (1, '喻湘东', 'yxd123', 'yxd123', NULL, 1);
-INSERT INTO `t_teacher` VALUES (2, NULL, 'yxd789', 'yxd789', NULL, 1);
-INSERT INTO `t_teacher` VALUES (3, '喻湘东', 't_1', '123123', '2240170192@qq.com', 1);
-INSERT INTO `t_teacher` VALUES (4, '喻湘东', 'yxd1', '915abfdd35c4a4307c940411bf17219a', '2240170192@qq.com', 1);
+INSERT INTO `t_teacher` VALUES (5, '喻湘东', 'yxd1', 'a0cf8379cd9726c90dec9c0e3b2c97cc', '2240170192@qq.com', 1);
 
 -- ----------------------------
 -- Table structure for test

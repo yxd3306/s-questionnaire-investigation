@@ -20,16 +20,10 @@ public class RestQuestionnaireObject {
 
 
     private List<QuestionnaireContext> questionnaireContexts;
+    private List<QuestionnaireContextTitle> questionnaireContextTitles;
 
-    public List<QuestionnaireContextTitle> getQuestionnaireContextTitles() {
-        return QuestionnaireContextTitles;
-    }
 
-    public void setQuestionnaireContextTitles(List<QuestionnaireContextTitle> questionnaireContextTitles) {
-        QuestionnaireContextTitles = questionnaireContextTitles;
-    }
 
-    private List<QuestionnaireContextTitle> QuestionnaireContextTitles;
 
     public Integer getQuestionnaireId() {
         return questionnaireId;
@@ -77,5 +71,13 @@ public class RestQuestionnaireObject {
 
     public void setQuestionnaireContexts(List<QuestionnaireContext> questionnaireContexts) {
         this.questionnaireContexts = questionnaireContexts;
+    }
+
+    public List<QuestionnaireContextTitle> getQuestionnaireContextTitles() {
+        return questionnaireContextTitles;
+    }
+
+    public void setQuestionnaireContextTitles(List<QuestionnaireContextTitle> questionnaireContextTitles) {
+        this.questionnaireContextTitles = questionnaireContextTitles;
     }
 }

@@ -24,4 +24,10 @@ public interface TeacherService {
     JSONObject addContext(HttpServletRequest request);
 
     JSONObject deleteQuestionnaireById(HttpServletRequest request);
+
+    JSONObject deleteContextByTitleId(HttpServletRequest request);
+
+    JSONObject updateContext(HttpServletRequest request);
+
+    JSONObject releaseQuestionnaire(HttpServletRequest request);
 }
