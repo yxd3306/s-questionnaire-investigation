@@ -107,13 +107,15 @@
                             if (v.questionnaireState == 0) {
                                 // 已完成
                                 html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                   '<td class="td">' +
                                     '<input id="'+v.questionnaireId+'" state="'+v.questionnaireState+'" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="'+v.questionnaireId+'" onClick="changeCheck()" />' +
                                     '<label  for="'+v.questionnaireId+'"></label >' +
-                                    '   <td>' +
+                                    '</td>'+
+                                    '   <td >' +
                                     '<span>' + v.questionnaireTitle + '</span>' +
                                     '</td>' +
-                                    '       <td class="ok">已完成</td>' +
-                                    '<td>' +
+                                    '       <td class="ok td">已完成</td>' +
+                                   '<td class="td">' +
                                     '   <button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
                                     '   |' +
                                     '   <button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
@@ -122,17 +124,17 @@
                                     '       </td>' +
                                     '   </tr>'
                             } else if (v.questionnaireState == 1) {
-                                // 进行中
+                                // 草稿
                                 html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
-                                        '<td>' +
+                                    '<td class="td">' +
                                     '<input id="'+v.questionnaireId+'" state="'+v.questionnaireState+'" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="'+v.questionnaireId+'" onClick="changeCheck()"/>' +
                                     '<label  for="'+v.questionnaireId+'"></label >' +
                                     '</td>'+
-                                    '   <td>' +
+                                    '   <td class="td">' +
                                     '<span>' + v.questionnaireTitle + '</span>' +
-                                    '</td>' +
-                                    '       <td class="draft">草稿</td>' +
-                                    '<td>' +
+                                    '</>' +
+                                    '       <td class="draft td">草稿</td>' +
+                                    '<td class="td">' +
                                     '   <button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
                                     '   |' +
                                     '   <button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
@@ -141,18 +143,18 @@
                                     '       </td>' +
                                     '   </tr>'
                             } else if (v.questionnaireState == 2) {
-                                // 待测评
+                                // 已发布
                                 html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
-                                    '<td>' +
+                                   '<td class="td">' +
                                     '<input id="'+v.questionnaireId+'" state="'+v.questionnaireState+'" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="'+v.questionnaireId+'" onClick="changeCheck()"/>' +
                                     '<label  for="'+v.questionnaireId+'"></label >' +
                                     '</td>'+
-                                    '   <td>' +
+                                    '   <td class="td">' +
                                     '<span>' + v.questionnaireTitle + '</span>' +
                                     '</td>' +
-                                    '       <td class="wait">已发布</td>' +
-                                    '   <td>' +
-                                    '   <button class="update">修改</button>' +
+                                    '       <td class="wait td">已发布</td>' +
+                                    '   <td class="td">' +
+                                    '   <button class="update prohibit">修改</button>' +
                                     '   |' +
                                     '   <button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
                                     '   |' +
@@ -172,6 +174,20 @@
                     console.log("err" + e);
                 }
             );
+
+            $('.data-body').on('mouseenter', '.td', function () {
+                $(this).addClass('foucs-td');
+            });
+            $('.data-body').on('mouseleave', '.td', function () {
+                $(this).removeClass('foucs-td');
+            });
+            $('all-list').mouseenter(function () {
+                $(this).addClass('foucs-td');
+            });
+            $('.all-list').on('mouseleave', '.td', function () {
+                $(this).removeClass('foucs-td');
+            });
+
 
             $('.not-data-add').on('click', function () {
                 window.location.href = "/teacher/add.html";
@@ -193,8 +209,10 @@
                         states=states.concat($($(this).parent().siblings()[1]))
                         dos=dos.concat($($(this).parent().siblings()[2]).find('.update'))
                         checks=checks.concat($(this));
+                        $('.all-list').html("全选")
                     }else{
                         $(this).prop("checked", false);
+                        $('.all-list').html("全选")
                     }
                 });
 

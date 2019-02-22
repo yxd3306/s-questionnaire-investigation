@@ -100,10 +100,10 @@
             "/student/login",
             data,
             function (e) {
-                if(e.code==0)
-                    alert(e.msg)
+                if(e.code==1)
+                    window.location.href="/student/index.html";
                 else
-                    window.location.href="/teacher/index.html";
+                    alert(e.msg);
             },
             function (e) {
 

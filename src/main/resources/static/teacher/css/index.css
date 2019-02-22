@@ -384,3 +384,7 @@ input[type=checkbox]{
 .prohibit{
     cursor: not-allowed;
 }
+
+.foucs-td{
+    background: #d5ddce;
+}
