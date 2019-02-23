@@ -1,12 +1,19 @@
 package com.questionnaire.teacher.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.questionnaire.common.page.PageBean;
 import com.questionnaire.common.util.BaseUtil;
+import com.questionnaire.common.util.DateUtil;
 import com.questionnaire.dao.QuestionnaireContextMapper;
 import com.questionnaire.dao.QuestionnaireContextTitleMapper;
 import com.questionnaire.dao.QuestionnaireMapper;
 import com.questionnaire.dao.QuestionnaireTypeMapper;
-import com.questionnaire.entity.*;
+import com.questionnaire.entity.Questionnaire;
+import com.questionnaire.entity.QuestionnaireContext;
+import com.questionnaire.entity.QuestionnaireContextTitle;
+import com.questionnaire.entity.RestQuestionnaireObject;
 import com.questionnaire.teacher.dao.TeacherMapper;
 import com.questionnaire.teacher.entity.Teacher;
 import com.questionnaire.teacher.service.TeacherService;
@@ -16,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -98,45 +107,46 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public JSONObject selectQuestionnaires(HttpServletRequest request) {
         TreeMap<String, String> allRequestParam = BaseUtil.getAllRequestParam(request);
-        String id = allRequestParam.get("id");
+        Integer teacherId = Integer.parseInt(allRequestParam.get("id"));
+        Integer currentPage = Integer.parseInt(allRequestParam.get("currentPage"));
+        Integer pageSize = Integer.parseInt(allRequestParam.get("pageSize"));
 
+
+        if (null != pageSize && pageSize > 0) {
+            PageHelper.startPage(currentPage, pageSize);
+        } else {
+            PageHelper.startPage(currentPage);
+        }
+        Page<Questionnaire> questionnaires = questionnaireMapper.selectQuestionnaireByPage(teacherId);
+        int countNums = questionnaireMapper.count(teacherId);            //总记录数
         JSONObject jsonObject = new JSONObject();
-        List<RestQuestionnaireObject> restQuestionnaireObjects = new ArrayList<>();
-
-        // 获取问卷集合
-        List<Questionnaire> questionnaires = questionnaireMapper.selectQuestionnaires(Integer.parseInt(id));
-
-        if (!questionnaires.isEmpty() && questionnaires.size() > 0) {
-            // 将结合遍历并赋值给返回对象
+        if (countNums <= 0) {
+            jsonObject.put("code", 0);
+            jsonObject.put("msg", "无相关问卷");
+        } else {
+            ArrayList<RestQuestionnaireObject> restQuestionnaireObjects = new ArrayList<>();
             for (Questionnaire questionnaire : questionnaires) {
                 RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
                 restQuestionnaireObject.setQuestionnaireId(questionnaire.getId());
                 restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
-                restQuestionnaireObject.setQuestionnaireState(questionnaire.getState());
-
-                List<QuestionnaireContext> questionnaireContexts = questionnaireContextMapper.selectQuestionnaireContexts(questionnaire.getId());
-
-                QuestionnaireType questionnaireType = questionnaireTypeMapper.selectQuestionnaires(questionnaire.getId());
-
-                if (!questionnaireContexts.isEmpty() && questionnaireContexts.size() > 0) {
-                    restQuestionnaireObject.setQuestionnaireContexts(questionnaireContexts);
-                    if (null != questionnaireType) {
-                        restQuestionnaireObject.setQuestionnaireTypeId(questionnaireType.getId());
-                        restQuestionnaireObject.setQuestionnaireTypeName(questionnaireType.getTypeName());
-                    }
+                try {
+                    restQuestionnaireObject.setQuestionnaireCreateTime(DateUtil.dateFormat(questionnaire.getCreateTime(), DateUtil.HOUR_PATTERN));
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                // 将单条问卷添加到返回结果集
+                restQuestionnaireObject.setQuestionnaireState(questionnaire.getState());
                 restQuestionnaireObjects.add(restQuestionnaireObject);
 
             }
+            PageBean<RestQuestionnaireObject> pageData = new PageBean<>(currentPage, pageSize, countNums);
+            pageData.setItems(restQuestionnaireObjects);
             jsonObject.put("code", 1);
             jsonObject.put("msg", "问卷返回成功");
-            jsonObject.put("data", restQuestionnaireObjects);
-        } else {
-            jsonObject.put("code", 0);
-            jsonObject.put("msg", "无相关问卷");
+            jsonObject.put("data", pageData);
         }
+
         return jsonObject;
+//        return null;
     }
 
 
@@ -153,6 +163,7 @@ public class TeacherServiceImpl implements TeacherService {
         }
         Questionnaire questionnaire = new Questionnaire();
         questionnaire.setTitle(allRequestParam.get("title"));
+        questionnaire.setCreateTime(new Date());
         questionnaire.setState(1);
         questionnaire.setTeacherId(Integer.parseInt(teacherUserId));
         int insert = questionnaireMapper.insertRest(questionnaire);
@@ -167,7 +178,7 @@ public class TeacherServiceImpl implements TeacherService {
         TreeMap<String, String> allRequestParam = BaseUtil.getAllRequestParam(request);
         JSONObject jsonObject = new JSONObject();
         String questionnaireId = allRequestParam.get("questionnaireId");
-        if (null==questionnaireId||questionnaireId.isEmpty()) {
+        if (null == questionnaireId || questionnaireId.isEmpty()) {
             jsonObject.put("code", 0);
             jsonObject.put("msg", "无相关问卷");
         } else {
@@ -181,13 +192,13 @@ public class TeacherServiceImpl implements TeacherService {
                 RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
 
                 List<QuestionnaireContextTitle> questionnaireContextTitles = questionnaireContextTitleMapper.selectQuestionnaireContextTitles(Integer.parseInt(questionnaireId));
-                if(!questionnaireContextTitles.isEmpty()&&questionnaireContextTitles.size()>0){
+                if (!questionnaireContextTitles.isEmpty() && questionnaireContextTitles.size() > 0) {
 
 
                     for (QuestionnaireContextTitle questionnaireContextTitle : questionnaireContextTitles) {
 
                         List<QuestionnaireContext> questionnaireContexts = questionnaireContextMapper.selectQuestionnaireContexts(questionnaireContextTitle.getId());
-                        if(!questionnaireContexts.isEmpty()&&questionnaireContexts.size()>0){
+                        if (!questionnaireContexts.isEmpty() && questionnaireContexts.size() > 0) {
                             for (QuestionnaireContext questionnaireContext : questionnaireContexts) {
                                 r_questionnaireContexts.add(questionnaireContext);
                             }
@@ -204,7 +215,7 @@ public class TeacherServiceImpl implements TeacherService {
                     jsonObject.put("code", 1);
                     jsonObject.put("msg", "");
                     jsonObject.put("data", restQuestionnaireObject);
-                }else{
+                } else {
                     restQuestionnaireObject.setQuestionnaireId(Integer.parseInt(questionnaireId));
                     restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
                     restQuestionnaireObject.setQuestionnaireState(questionnaire.getState());
@@ -227,13 +238,13 @@ public class TeacherServiceImpl implements TeacherService {
         String context = allRequestParam.get("context");
         String[] titles = title.split(",");
         String[] contexts = context.split(",");
-        String s=null;
-        String c=null;
+        String s = null;
+        String c = null;
         if (questionnaireId.isEmpty()) {
             jsonObject.put("code", 0);
             jsonObject.put("msg", "添加失败");
         } else {
-            int index=0;
+            int index = 0;
             // 遍历题目标题
             for (int i = 0; i < titles.length; i++) {
                 s = titles[i];
@@ -243,10 +254,10 @@ public class TeacherServiceImpl implements TeacherService {
                 questionnaireContextTitle.setQuestionnaireId(Integer.parseInt(questionnaireId));
                 questionnaireContextTitle.setState(1);
                 int count = questionnaireContextTitleMapper.insertRest(questionnaireContextTitle);
-                int restId =questionnaireContextTitle.getId();
-                if(count>0){
-                    restId=questionnaireContextTitle.getId();
-                    for (int j = 0; j < contexts.length/titles.length; j++) {
+                int restId = questionnaireContextTitle.getId();
+                if (count > 0) {
+                    restId = questionnaireContextTitle.getId();
+                    for (int j = 0; j < contexts.length / titles.length; j++) {
                         c = contexts[index];
                         index++;
                         QuestionnaireContext questionnaireContext = new QuestionnaireContext();
@@ -261,12 +272,11 @@ public class TeacherServiceImpl implements TeacherService {
                     }
                     jsonObject.put("code", 1);
                     jsonObject.put("msg", "添加成功");
-                }else{
+                } else {
                     jsonObject.put("code", 1);
                     jsonObject.put("msg", "添加失败");
                 }
             }
-
 
 
         }
@@ -319,15 +329,14 @@ public class TeacherServiceImpl implements TeacherService {
         questionnaireContext.setState(-1);
 
         int i = questionnaireContextTitleMapper.updateByPrimaryKey(questionnaireContextTitle);
-        if(i>0) {
+        if (i > 0) {
             questionnaireContextMapper.updateByQuestionnaireContextTitleId(questionnaireContext);
             jsonObject.put("code", 1);
             jsonObject.put("msg", "删除成功");
-        }else{
+        } else {
             jsonObject.put("code", 0);
             jsonObject.put("msg", "删除失败");
         }
-
 
 
         return jsonObject;
@@ -340,7 +349,6 @@ public class TeacherServiceImpl implements TeacherService {
         JSONObject jsonObject = new JSONObject();
 
 
-
         String questionnaireId = allRequestParam.get("questionnaireId");
         String questionnaireTitle = allRequestParam.get("questionnaireTitle");
         String title = allRequestParam.get("title");
@@ -349,24 +357,22 @@ public class TeacherServiceImpl implements TeacherService {
         String[] titles = title.split(",");
         String[] contexts = context.split(",");
         String[] titleIds = titleId.split(",");
-        String s=null;
-        String c=null;
-        String id=null;
+        String s = null;
+        String c = null;
+        String id = null;
         if (questionnaireId.isEmpty()) {
             jsonObject.put("code", 0);
             jsonObject.put("msg", "修改失败");
         } else {
 
-            int oldTitleIndex=0;
-            int oldContextIndex=0;
-            int rest=0;
+            int oldTitleIndex = 0;
+            int oldContextIndex = 0;
+            int rest = 0;
 
             Questionnaire questionnaire = new Questionnaire();
             questionnaire.setId(Integer.parseInt(questionnaireId));
             questionnaire.setTitle(questionnaireTitle);
-            rest+= questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
-
-
+            rest += questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
 
 
             for (int i = 0; i < titleIds.length; i++) {
@@ -387,14 +393,14 @@ public class TeacherServiceImpl implements TeacherService {
                 }
             }
 
-            for (int i = 0; i < titles.length-titleIds.length; i++) {
+            for (int i = 0; i < titles.length - titleIds.length; i++) {
                 QuestionnaireContextTitle questionnaireContextTitle = new QuestionnaireContextTitle();
                 String i_title = titles[oldTitleIndex];
                 questionnaireContextTitle.setQuestionnaireTitle(i_title);
                 questionnaireContextTitle.setState(1);
                 rest += questionnaireContextTitleMapper.insertRest(questionnaireContextTitle);
                 oldTitleIndex++;
-                int restId=questionnaireContextTitle.getId();
+                int restId = questionnaireContextTitle.getId();
                 for (int j = 0; j < 4; j++) {
                     String context1 = contexts[oldContextIndex];
                     QuestionnaireContext questionnaireContext = new QuestionnaireContext();
@@ -406,10 +412,10 @@ public class TeacherServiceImpl implements TeacherService {
                     oldContextIndex++;
                 }
             }
-            if(rest>0){
+            if (rest > 0) {
                 jsonObject.put("code", 1);
                 jsonObject.put("msg", "修改成功");
-            }else{
+            } else {
                 jsonObject.put("code", 0);
                 jsonObject.put("msg", "修改失败");
             }
@@ -428,22 +434,129 @@ public class TeacherServiceImpl implements TeacherService {
         String ids = allRequestParam.get("ids");
         String[] split = ids.split(",");
         Questionnaire questionnaire = new Questionnaire();
-        int restId=0;
-        try{
+        int restId = 0;
+        try {
             for (int i = 0; i < split.length; i++) {
                 String s = split[i];
                 questionnaire.setId(Integer.parseInt(s));
                 questionnaire.setState(2);
-                restId+=questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
+                restId += questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
             }
-        }finally {
-            if(restId>0){
-                jsonObject.put("code",1);
-                jsonObject.put("msg","发布成功");
-            }else{
-                jsonObject.put("code",0);
-                jsonObject.put("msg","发布失败");
+        } finally {
+            if (restId > 0) {
+                jsonObject.put("code", 1);
+                jsonObject.put("msg", "发布成功");
+            } else {
+                jsonObject.put("code", 0);
+                jsonObject.put("msg", "发布失败");
             }
+        }
+
+
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject selectQuestionnaireByState(HttpServletRequest request) {
+        TreeMap<String, String> allRequestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+        Integer teacherId = Integer.parseInt(allRequestParam.get("id"));
+        Integer currentPage = Integer.parseInt(allRequestParam.get("currentPage"));
+        Integer pageSize = Integer.parseInt(allRequestParam.get("pageSize"));
+        Integer state = Integer.parseInt(allRequestParam.get("state"));
+
+
+        if (null != pageSize && pageSize > 0) {
+            PageHelper.startPage(currentPage, pageSize);
+        } else {
+            PageHelper.startPage(currentPage);
+        }
+
+        if (null == teacherId || null == state) {
+            jsonObject.put("code", 0);
+            jsonObject.put("msg", "无相关问卷");
+        } else {
+            Page<Questionnaire> questionnaires = questionnaireMapper.selectQuestionnaireByState(teacherId, state);
+            int countNums = questionnaireMapper.countByState(teacherId, state);            //总记录数
+            if (countNums <= 0) {
+                jsonObject.put("code", 0);
+                jsonObject.put("msg", "无相关问卷");
+            } else {
+                List<RestQuestionnaireObject> restQuestionnaireObjects = new ArrayList<>();
+                for (Questionnaire questionnaire : questionnaires) {
+                    RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
+                    restQuestionnaireObject.setQuestionnaireId(questionnaire.getId());
+                    restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
+                    try {
+                        restQuestionnaireObject.setQuestionnaireCreateTime(DateUtil.dateFormat(questionnaire.getCreateTime(), DateUtil.HOUR_PATTERN));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    restQuestionnaireObject.setQuestionnaireState(questionnaire.getState());
+                    restQuestionnaireObjects.add(restQuestionnaireObject);
+                }
+
+                PageBean<RestQuestionnaireObject> pageData = new PageBean<>(currentPage, pageSize, countNums);
+                pageData.setItems(restQuestionnaireObjects);
+                jsonObject.put("code", 1);
+                jsonObject.put("msg", "问卷返回成功");
+                jsonObject.put("data", pageData);
+            }
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject selectQuestionnaireBySearch(HttpServletRequest request) {
+
+        TreeMap<String, String> allRequestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+        Integer teacherId = Integer.parseInt(allRequestParam.get("id"));
+        Integer currentPage = Integer.parseInt(allRequestParam.get("currentPage"));
+        Integer pageSize = Integer.parseInt(allRequestParam.get("pageSize"));
+        String search = allRequestParam.get("search");
+
+        if (null == teacherId || search.isEmpty() || null == search) {
+            jsonObject.put("code", 0);
+            jsonObject.put("msg", "无相关问卷");
+        } else {
+
+            /*设置当前页和每页条数*/
+            if (null != pageSize && pageSize > 0) {
+                PageHelper.startPage(currentPage, pageSize);
+            } else {
+                PageHelper.startPage(currentPage);
+            }
+
+            Page<Questionnaire> questionnaires = questionnaireMapper.selectQuestionnaireBySearch(teacherId, search);
+            int countNums = questionnaireMapper.countBySearch(teacherId, search);            //总记录数
+            if (countNums <= 0) {
+                jsonObject.put("code", 0);
+                jsonObject.put("msg", "无相关问卷");
+            } else {
+                List<RestQuestionnaireObject> restQuestionnaireObjects = new ArrayList<>();
+                for (Questionnaire questionnaire : questionnaires) {
+                    RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
+                    restQuestionnaireObject.setQuestionnaireId(questionnaire.getId());
+                    restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
+                    try {
+                        restQuestionnaireObject.setQuestionnaireCreateTime(DateUtil.dateFormat(questionnaire.getCreateTime(), DateUtil.HOUR_PATTERN));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    restQuestionnaireObject.setQuestionnaireState(questionnaire.getState());
+                    restQuestionnaireObjects.add(restQuestionnaireObject);
+                }
+
+                PageBean<RestQuestionnaireObject> pageData = new PageBean<>(currentPage, pageSize, countNums);
+                pageData.setItems(restQuestionnaireObjects);
+                jsonObject.put("code", 1);
+                jsonObject.put("msg", "问卷返回成功");
+                jsonObject.put("data", pageData);
+            }
+
+
         }
 
 

@@ -1,11 +1,12 @@
 var common={
     /*发送ajax*/
-    ajaxSend: function(url, data, callback, error) {
+    ajaxSend: function(url, data, callback, error,async) {
         $.ajax({
             url: url,
             type: 'post',
             dataType: 'json',
             data: data,
+            async:async,
             timeout: 3000,
             success: function(data) {
                 callback(data);

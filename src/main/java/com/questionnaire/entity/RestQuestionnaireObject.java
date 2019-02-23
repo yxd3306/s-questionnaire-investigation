@@ -18,6 +18,9 @@ public class RestQuestionnaireObject {
     private String questionnaireTypeName;
     private Integer questionnaireState;
 
+    private String questionnaireCreateTime;
+    private String questionnaireReleaseTime;
+
 
     private List<QuestionnaireContext> questionnaireContexts;
     private List<QuestionnaireContextTitle> questionnaireContextTitles;
@@ -71,6 +74,22 @@ public class RestQuestionnaireObject {
 
     public void setQuestionnaireContexts(List<QuestionnaireContext> questionnaireContexts) {
         this.questionnaireContexts = questionnaireContexts;
+    }
+
+    public String getQuestionnaireCreateTime() {
+        return questionnaireCreateTime;
+    }
+
+    public void setQuestionnaireCreateTime(String questionnaireCreateTime) {
+        this.questionnaireCreateTime = questionnaireCreateTime;
+    }
+
+    public String getQuestionnaireReleaseTime() {
+        return questionnaireReleaseTime;
+    }
+
+    public void setQuestionnaireReleaseTime(String questionnaireReleaseTime) {
+        this.questionnaireReleaseTime = questionnaireReleaseTime;
     }
 
     public List<QuestionnaireContextTitle> getQuestionnaireContextTitles() {

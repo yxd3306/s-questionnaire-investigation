@@ -1,5 +1,7 @@
 package com.questionnaire.entity;
 
+import java.util.Date;
+
 public class Questionnaire {
     private Integer id;
 
@@ -8,6 +10,10 @@ public class Questionnaire {
     private Integer teacherId;
 
     private Integer submitId;
+
+    private Date createTime;
+
+    private Date releaseTime;
 
     private Integer state;
 
@@ -41,6 +47,22 @@ public class Questionnaire {
 
     public void setSubmitId(Integer submitId) {
         this.submitId = submitId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getReleaseTime() {
+        return releaseTime;
+    }
+
+    public void setReleaseTime(Date releaseTime) {
+        this.releaseTime = releaseTime;
     }
 
     public Integer getState() {

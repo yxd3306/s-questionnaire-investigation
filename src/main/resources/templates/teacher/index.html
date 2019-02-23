@@ -5,9 +5,54 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../../static/teacher/css/index.css">
+    <link rel="stylesheet" href="../../static/plugin/select/css/jquery.searchableSelect.css">
+    <link rel="stylesheet" href="../../static/plugin/page/css/zxf_page.css">
+    <link rel="stylesheet" href="../../static/plugin/search/css/demo.css">
+    <link rel="stylesheet" href="../../static/plugin/search/css/searchMeme.css">
+
+
     <script src="../../static/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../../static/plugin/select/js/jquery.searchableSelect.js"></script>
+    <script src="../../static/plugin/page/js/zxf_page.js"></script>
+    <script src="../../static/plugin/search/js/jquery.searchMeme.js"></script>
     <script src="../../static/js/common.js"></script>
 
+
+    <style type="text/css">
+
+        .demobar {
+
+            height: 90px;
+
+            line-height: 90px;
+
+        }
+
+        .demobar .fleft {
+
+            float: left;
+
+            margin-left: 10px;
+
+        }
+
+        .demobar .fright {
+
+            float: right;
+
+            margin-top: 14px;
+
+            margin-right: 10px;
+
+        }
+
+        #demo-side-bar {
+            position: absolute;
+            top: 90px;
+            display: none;
+        }
+
+    </style>
 
 </head>
 <body>
@@ -59,14 +104,27 @@
                         <img class="add-img" src="../../static/teacher/img/release.png">
                         <span>发布问卷</span>
                     </button>
+                    <select id="select-list">
+                    </select>
+                    <div class="wrapper">
+                        <div class="demo">
+                            <input type="text" id="search-orange"/>
+                            <input type="text" id="search-green"/>
+                            <input type="text" id="search-red"/>
+                            <div class="clear">
+                            </div>
+                        </div>
+                    </div>
                 </caption>
                 <thead>
                 <tr>
                     <td>
                         <button class="all-list hav-all-lis">全选</button>
                     </td>
+                    <td>编号</td>
                     <td>标题</td>
                     <td>状态</td>
+                    <td>创建时间</td>
                     <td>操作</td>
                 </tr>
                 </thead>
@@ -84,198 +142,303 @@
         </div>
     </div>
 </nav>
+<nav>
+    <div class="zxf_pagediv"></div>
+</nav>
 
 </body>
 <script type="text/javascript">
+
+    // 全局变量
+    var index = 0;
+    var pageNum = 0;
+    var thisPage = 1;
+    var pageSize = 5;
+
+    init();
+    initSearch();
+
     function init() {
         $(document).ready(function () {
             var userName = common.getCookie("teacherUserName");
             $('#userInfo').html(userName);
-
-            var data = {
-                id: common.getCookie("teacherUserId")
-            }
-            common.ajaxSend(
-                "/teacher/selectQuestionnaires",
-                data,
-                function (e) {
-                    if (e.code == 1) {
-                        $('.not-data').addClass('hide-mode');
-                        $('.list-data').removeClass('show-mode');
-                        var html = '';
-                        $.each(e.data, function (i, v) {
-                            if (v.questionnaireState == 0) {
-                                // 已完成
-                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
-                                   '<td class="td">' +
-                                    '<input id="'+v.questionnaireId+'" state="'+v.questionnaireState+'" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="'+v.questionnaireId+'" onClick="changeCheck()" />' +
-                                    '<label  for="'+v.questionnaireId+'"></label >' +
-                                    '</td>'+
-                                    '   <td >' +
-                                    '<span>' + v.questionnaireTitle + '</span>' +
-                                    '</td>' +
-                                    '       <td class="ok td">已完成</td>' +
-                                   '<td class="td">' +
-                                    '   <button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
-                                    '   |' +
-                                    '   <button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
-                                    '   |' +
-                                    '   <button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
-                                    '       </td>' +
-                                    '   </tr>'
-                            } else if (v.questionnaireState == 1) {
-                                // 草稿
-                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
-                                    '<td class="td">' +
-                                    '<input id="'+v.questionnaireId+'" state="'+v.questionnaireState+'" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="'+v.questionnaireId+'" onClick="changeCheck()"/>' +
-                                    '<label  for="'+v.questionnaireId+'"></label >' +
-                                    '</td>'+
-                                    '   <td class="td">' +
-                                    '<span>' + v.questionnaireTitle + '</span>' +
-                                    '</>' +
-                                    '       <td class="draft td">草稿</td>' +
-                                    '<td class="td">' +
-                                    '   <button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
-                                    '   |' +
-                                    '   <button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
-                                    '   |' +
-                                    '   <button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
-                                    '       </td>' +
-                                    '   </tr>'
-                            } else if (v.questionnaireState == 2) {
-                                // 已发布
-                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
-                                   '<td class="td">' +
-                                    '<input id="'+v.questionnaireId+'" state="'+v.questionnaireState+'" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="'+v.questionnaireId+'" onClick="changeCheck()"/>' +
-                                    '<label  for="'+v.questionnaireId+'"></label >' +
-                                    '</td>'+
-                                    '   <td class="td">' +
-                                    '<span>' + v.questionnaireTitle + '</span>' +
-                                    '</td>' +
-                                    '       <td class="wait td">已发布</td>' +
-                                    '   <td class="td">' +
-                                    '   <button class="update prohibit">修改</button>' +
-                                    '   |' +
-                                    '   <button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
-                                    '   |' +
-                                    '   <button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
-                                    '       </td>' +
-                                    '   </tr>'
-                            }
-                            $('.data-body').append(html);
-                        })
-                    } else {
-                        $('.list-data').addClass('show-mode');
-                        $('.not-data').removeClass('hide-mode');
+            // 加载下拉框插件
+            $('#select-list').append('<option value="请选择" class="select-list-info">请选择</option>' +
+                '<option value="1" class="select-list-info">草稿</option>' +
+                '<option value="2" class="select-list-info">已发布</option>' +
+                '<option value="0" class="select-list-info">已完成</option>'
+            )
+            $('#select-list').searchableSelect({
+                "afterSelectItem": function () {
+                    var data = {
+                        state: $('#select-list').val(),
+                        id: common.getCookie("teacherUserId"),
+                        currentPage: thisPage,
+                        pageSize: pageSize
                     }
-                    console.log(e);
-                },
-                function (e) {
-                    console.log("err" + e);
+                    if ($('#select-list').val() == 1) {
+                        selectQuestionnaireByState(data)
+                    } else if ($('#select-list').val() == 2) {
+                        selectQuestionnaireByState(data)
+                    } else if ($('#select-list').val() == 0) {
+                        selectQuestionnaireByState(data)
+                    } else {
+                        data = {
+                            id: common.getCookie("teacherUserId"),
+                            currentPage: thisPage,
+                            pageSize: pageSize
+                        }
+                        initData(data);
+
+                    }
                 }
-            );
-
-            $('.data-body').on('mouseenter', '.td', function () {
-                $(this).addClass('foucs-td');
             });
-            $('.data-body').on('mouseleave', '.td', function () {
-                $(this).removeClass('foucs-td');
-            });
-            $('all-list').mouseenter(function () {
-                $(this).addClass('foucs-td');
-            });
-            $('.all-list').on('mouseleave', '.td', function () {
-                $(this).removeClass('foucs-td');
-            });
-
-
-            $('.not-data-add').on('click', function () {
-                window.location.href = "/teacher/add.html";
-            });
-            $('.has-data-add').on('click', function () {
-                window.location.href = "/teacher/add.html";
-            });
-
-            var ids=new Array();
-            var states=new Array();
-            var dos=new Array();
-            var checks=new Array();
-
-
-            $('.has-data-release').on('click', function () {
-                $.each($('input:checkbox'), function () {
-                    if (this.checked&&$(this).attr('state')==1) {
-                        ids=ids.concat($(this).val());
-                        states=states.concat($($(this).parent().siblings()[1]))
-                        dos=dos.concat($($(this).parent().siblings()[2]).find('.update'))
-                        checks=checks.concat($(this));
-                        $('.all-list').html("全选")
-                    }else{
-                        $(this).prop("checked", false);
-                        $('.all-list').html("全选")
+            // 加载分页插件
+            if (pageNum > 0) {
+                $(".zxf_pagediv").createPage({
+                    pageNum: pageNum,
+                    current: 6,
+                    backfun: function (e) {
+                        console.log()
+                        if ('请选择' == $('#select-list').val()) {
+                            var data = {
+                                id: common.getCookie("teacherUserId"),
+                                currentPage: e.current,
+                                pageSize: pageSize
+                            }
+                            initData(data)
+                        } else {
+                            var data = {
+                                state: $('#select-list').val(),
+                                id: common.getCookie("teacherUserId"),
+                                currentPage: e.current,
+                                pageSize: pageSize
+                            }
+                            selectQuestionnaireByState(data)
+                        }
                     }
                 });
+            }
+
+            mouseTriggerEvent();
+
+            buildQuestionnaire();
+
+            otherButtonClick()
 
 
-                var data={
-                    ids:ids.toString()
+        });
+
+    }
+
+    function initSearch() {
+        var searchOrange = $('#search-orange').searchMeme({
+            onSearch: function (searchText) {
+                console.log(searchText)
+                setTimeout(function () {
+
+                    searchOrange.searchMeme({searchComplete: true});
+
+                    $('#search-results').html("You searched for " + searchGreen.val() + "");
+
+                    $('.panel').addClass('go-green').animate({'height': 200}, 500);
+
+                }, 3000);
+                var data = {
+                    search: searchText,
+                    id: common.getCookie("teacherUserId"),
+                    currentPage: thisPage,
+                    pageSize: pageSize
                 }
-                 release(data,states,dos,checks);
-            })
-            $('.all-list').on('click', function () {
-                if('全选'==$('.all-list').text()){
-                    for (var i = 0; i < $("input[name=checkbox]").length; i++) {
-                        if($($("input[name=checkbox]")[i]).not(":checked")){
-                            $($("input[name=checkbox]")[i]).prop("checked", true);
-                            $('.all-list').html("取消全选")
-                        }
-                    }
-                }else{
-                    for (var i = 0; i < $("input[name=checkbox]").length; i++) {
-                        if($($("input[name=checkbox]")[i]).is(":checked")){
-                            $($("input[name=checkbox]")[i]).prop("checked", false);
-                            $('.all-list').html("全选")
-                        }
-                    }
-                }
+                selectQuestionnaireBySearch(data,searchOrange);
+            }
+            , buttonPlacement: 'left', button: 'orange'
+        });
+
+        var searchGreen = $('#search-green').searchMeme({
+            onSearch: function (searchText) {
+
+                setTimeout(function () {
+
+                    searchGreen.searchMeme({searchComplete: true});
+
+                    $('#search-results').html("You searched for " + searchGreen.val() + "");
+
+                    $('.panel').addClass('go-green').animate({'height': 200}, 500);
+
+                }, 3000);
+
+            }
+
+            , buttonPlacement: 'right', button: 'green'
+
+        });
+
+        var searchRed = $('#search-red').searchMeme({
+            onSearch: function (searchText) {
+
+                setTimeout(function () {
+
+                    searchRed.searchMeme({searchComplete: true});
+
+                    $('#search-results').html("You searched for " + searchRed.val() + "");
+
+                    $('.panel').animate({'height': 200}, 500, function () {
 
 
+                        alert('This is demo 3');
 
-                // $(":checkbox").each(function() {
-                //     if ($(this).prop("checked")) {
-                //         $(this).prop("checked", false);
-                //         $('.all-list').html("全选")
-                //     } else {
-                //         $(this).prop("checked", true);
-                //         $('.all-list').html("取消全选")
-                //     }
-                // })
-            })
+                    });
 
 
+                }, 3000);
+
+            }
+
+            , buttonPlacement: 'left', button: 'red'
+
+        });
+
+        $('.wrapper-green,.wrapper-red').css('display', 'none');
+
+        $('a').click(function () {
+
+            $('.panel').removeClass('go-green');
+
+            $('.wrapper-orange,.wrapper-green,.wrapper-red').css('display', 'none');
+
+            if ($(this).attr('class') == 'search-orange')
+
+                $('.wrapper-orange').css('display', '');
+
+            else if ($(this).attr('class') == 'search-green')
+
+                $('.wrapper-green').css('display', '');
+
+            else if ($(this).attr('class') == 'search-red')
+
+                $('.wrapper-red').css('display', '');
+
+
+            $('.panel').html('Search results here...').animate({'height': 100}, 500);
+
+            return false;
 
         });
     }
 
-    init();
 
-function changeCheck() {
-    var leng='';
-    for (var i = 0; i < $("input[name=checkbox]").length; i++) {
-        if($($("input[name=checkbox]")[i]).is(":checked")){
-            leng++;
+    // 初始化数据
+    function initData(data) {
+        common.ajaxSend(
+            "/teacher/selectQuestionnaires",
+            data,
+            function (e) {
+                if (e.code == 1) {
+                    var pageData = e.data;
+                    pageNum = pageData.totalPage;
+                    $('.not-data').addClass('hide-mode');
+                    $('.list-data').removeClass('show-mode');
+                    $('.data-body').children().remove();
+                    var html = '';
+                    index = ((data.currentPage - 1) * data.pageSize + 1)
+                    $.each(pageData.items, function (i, v) {
+                        if (v.questionnaireState == 0) {
+                            // 已完成
+                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                '<td class="td">' +
+                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()" />' +
+                                '<label  for="' + v.questionnaireId + '"></label >' +
+                                '</td>' +
+                                '<td class="td">' + index + '</td>' +
+                                '<td >' +
+                                '<span>' + v.questionnaireTitle + '</span>' +
+                                '</td>' +
+                                '<td class="ok td">已完成</td>' +
+                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                '<td class="td">' +
+                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                '|' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '|' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '</td>' +
+                                '</tr>'
+                        } else if (v.questionnaireState == 1) {
+                            // 草稿
+                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                '<td class="td">' +
+                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                '<label  for="' + v.questionnaireId + '"></label >' +
+                                '</td>' +
+                                '<td class="td">' + index + '</td>' +
+                                '<td class="td">' +
+                                '<span>' + v.questionnaireTitle + '</span>' +
+                                '</td>' +
+                                '<td class="draft td">草稿</td>' +
+                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                '<td class="td">' +
+                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                '|' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '|' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '</td>' +
+                                '</tr>'
+                        } else if (v.questionnaireState == 2) {
+                            // 已发布
+                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                '<td class="td">' +
+                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                '<label  for="' + v.questionnaireId + '"></label >' +
+                                '</td>' +
+                                '<td class="td">' + index + '</td>' +
+                                '<td class="td">' +
+                                '<span>' + v.questionnaireTitle + '</span>' +
+                                '</td>' +
+                                '<td class="wait td">已发布</td>' +
+                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                '<td class="td">' +
+                                '<button class="update prohibit">修改</button>' +
+                                '|' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '|' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '</td>' +
+                                '</tr>'
+                        }
+                        index++;
+                        $('.data-body').append(html);
+                    })
+                } else {
+                    $('.list-data').addClass('show-mode');
+                    $('.not-data').removeClass('hide-mode');
+                }
+            },
+            function (e) {
+            },
+            false
+        );
+    }
+
+    // checkbox改变选择状态
+    function changeCheck() {
+        var leng = '';
+        for (var i = 0; i < $("input[name=checkbox]").length; i++) {
+            if ($($("input[name=checkbox]")[i]).is(":checked")) {
+                leng++;
+            }
         }
+        if (leng == $("input[name=checkbox]").length) {
+            $('.all-list').html("取消全选")
+        } else {
+            $('.all-list').html("全选")
+        }
+
+
     }
-    if(leng==$("input[name=checkbox]").length){
-        $('.all-list').html("取消全选")
-    }else{
-        $('.all-list').html("全选")
-    }
 
-
-
-
-}
+    // 修改、查看、删除按钮事件
     function doSomething(id, obj) {
 
         var type = $(obj).text();
@@ -291,7 +454,7 @@ function changeCheck() {
                 "/teacher/deleteQuestionnaireById",
                 data,
                 function (e) {
-                    if($(obj).parent().parent().siblings().length==0)
+                    if ($(obj).parent().parent().siblings().length == 0)
                         window.location.reload();
                     else
                         $(obj).parent().parent().remove();
@@ -304,39 +467,234 @@ function changeCheck() {
 
     }
 
-    function release(data,objs,dos,checks) {
+    // 发布问卷按钮事件
+    function release(data, objs, dos, checks) {
 
-        if(data.ids.length>0){
+        if (data.ids.length > 0) {
 
             common.ajaxSend(
                 '/teacher/releaseQuestionnaire',
                 data,
                 function (e) {
-                    if(e.code==1){
-                        $.each(objs,function (i,v) {
+                    if (e.code == 1) {
+                        /*$.each(objs, function (i, v) {
                             $(v).addClass("wait")
                             $(v).text("已发布")
                         })
-                        $.each(dos,function (i,v) {
+                        $.each(dos, function (i, v) {
                             $(v).addClass("prohibit")
                         })
-                        $.each(checks,function (i,v) {
+                        $.each(checks, function (i, v) {
                             $(v).prop("checked", false);
-                            $(v).attr('state',2)
-                        })
-                    }else{
+                            $(v).attr('state', 2)
+                        })*/
+                        window.location.reload()
+                    } else {
                         return;
                     }
                 },
                 function (e) {
 
                 }
-
             )
         }
 
 
+    }
 
+    // 下拉菜单事件
+    function selectQuestionnaireByState(data) {
+        // 根据状态查询问卷
+        common.ajaxSend(
+            '/teacher/selectQuestionnaireByState',
+            data,
+            function (e) {
+                if (e.code == 1) {
+                    var pageData = e.data;
+                    pageNum = pageData.totalPage
+                    index = ((data.currentPage - 1) * data.pageSize + 1)
+                    console.log("currentPage=" + data.currentPage)
+                    $('.data-body').children().remove();
+                    var html = '';
+                    $.each(pageData.items, function (i, v) {
+                        if (v.questionnaireState == 0) {
+                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                '<td class="td">' +
+                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()" />' +
+                                '<label  for="' + v.questionnaireId + '"></label >' +
+                                '</td>' +
+                                '<td class="td">' + index + '</td>' +
+                                '<td >' +
+                                '<span>' + v.questionnaireTitle + '</span>' +
+                                '</td>' +
+                                '<td class="ok td">已完成</td>' +
+                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                '<td class="td">' +
+                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                '|' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '|' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '</td>' +
+                                '</tr>'
+                        } else if (v.questionnaireState == 1) {
+                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                '<td class="td">' +
+                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                '<label  for="' + v.questionnaireId + '"></label >' +
+                                '</td>' +
+                                '<td class="td">' + index + '</td>' +
+                                '<td class="td">' +
+                                '<span>' + v.questionnaireTitle + '</span>' +
+                                '</td>' +
+                                '<td class="draft td">草稿</td>' +
+                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                '<td class="td">' +
+                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                '|' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '|' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '</td>' +
+                                '</tr>'
+                        } else if (v.questionnaireState == 2) {
+                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                '<td class="td">' +
+                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                '<label  for="' + v.questionnaireId + '"></label >' +
+                                '</td>' +
+                                '<td class="td">' + index + '</td>' +
+                                '<td class="td">' +
+                                '<span>' + v.questionnaireTitle + '</span>' +
+                                '</td>' +
+                                '<td class="wait td">已发布</td>' +
+                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                '<td class="td">' +
+                                '<button class="update prohibit">修改</button>' +
+                                '|' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '|' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '</td>' +
+                                '</tr>'
+                        }
+                        $('.data-body').append(html);
+                        index++;
+                        console.log(index);
+                    })
+                    $(".zxf_pagediv").createPage({
+                        pageNum: pageNum,
+                        current: 6,
+                        backfun: function (e) {
+                        }
+                    });
+                } else {
+                    $('.data-body').children().remove();
+                    $(".zxf_pagediv").createPage({
+                        pageNum: 1,
+                        current: 6,
+                        backfun: function (e) {
+                        }
+                    });
+                }
+
+            },
+            function (e) {
+
+            },
+            false
+        )
+    }
+
+    // 鼠标移入移出事件
+    function mouseTriggerEvent() {
+        $('.data-body').on('mouseenter', '.td', function () {
+            $(this).addClass('foucs-td');
+        });
+        $('.data-body').on('mouseleave', '.td', function () {
+            $(this).removeClass('foucs-td');
+        });
+        $('all-list').mouseenter(function () {
+            $(this).addClass('foucs-td');
+        });
+        $('.all-list').on('mouseleave', '.td', function () {
+            $(this).removeClass('foucs-td');
+        });
+    }
+
+    // 创建问卷按钮事件
+    function buildQuestionnaire() {
+        $('.not-data-add').on('click', function () {
+            window.location.href = "/teacher/add.html";
+        });
+        $('.has-data-add').on('click', function () {
+            window.location.href = "/teacher/add.html";
+        });
+    }
+
+    function otherButtonClick() {
+        var ids = new Array();
+        var states = new Array();
+        var dos = new Array();
+        var checks = new Array();
+        $('.has-data-release').on('click', function () {
+            $.each($('input:checkbox'), function () {
+                if (this.checked && $(this).attr('state') == 1) {
+                    ids = ids.concat($(this).val());
+                    states = states.concat($($(this).parent().siblings()[1]))
+                    dos = dos.concat($($(this).parent().siblings()[2]).find('.update'))
+                    checks = checks.concat($(this));
+                    $('.all-list').html("全选")
+                } else {
+                    $(this).prop("checked", false);
+                    $('.all-list').html("全选")
+                }
+            });
+
+
+            var data = {
+                ids: ids.toString()
+            }
+            release(data, states, dos, checks);
+        })
+
+        $('.all-list').on('click', function () {
+            if ('全选' == $('.all-list').text()) {
+                for (var i = 0; i < $("input[name=checkbox]").length; i++) {
+                    if ($($("input[name=checkbox]")[i]).not(":checked")) {
+                        $($("input[name=checkbox]")[i]).prop("checked", true);
+                        $('.all-list').html("取消全选")
+                    }
+                }
+            } else {
+                for (var i = 0; i < $("input[name=checkbox]").length; i++) {
+                    if ($($("input[name=checkbox]")[i]).is(":checked")) {
+                        $($("input[name=checkbox]")[i]).prop("checked", false);
+                        $('.all-list').html("全选")
+                    }
+                }
+            }
+        })
+    }
+
+    function selectQuestionnaireBySearch(data,searchOrange) {
+        // if(data!=null){
+        //     common.ajaxSend(
+        //         '/teacher/selectQuestionnaireBySearch',
+        //         data,
+        //         function (e) {
+        //             if(e.code==1){
+        //                 searchOrange.searchMeme({searchComplete: true});
+        //                 var pageData=e.data;
+        //                 console.log(pageData);
+        //             }
+        //         },
+        //         function () {
+        //
+        //         },
+        //         false
+        //     )
+        // }
     }
 
 

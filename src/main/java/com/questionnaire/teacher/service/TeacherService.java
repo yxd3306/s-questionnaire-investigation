@@ -30,4 +30,8 @@ public interface TeacherService {
     JSONObject updateContext(HttpServletRequest request);
 
     JSONObject releaseQuestionnaire(HttpServletRequest request);
+
+    JSONObject selectQuestionnaireByState(HttpServletRequest request);
+
+    JSONObject selectQuestionnaireBySearch(HttpServletRequest request);
 }

@@ -21,9 +21,9 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
     <insert id="insert" parameterType="com.questionnaire.entity.QuestionnaireContextTitle">
-    insert into t_questionnaire_context_title (id, questionnaire_title, questionnaire_id, 
+    insert into t_questionnaire_context_title (id, questionnaire_title, questionnaire_id,
       state)
-    values (#{id,jdbcType=INTEGER}, #{questionnaireTitle,jdbcType=VARCHAR}, #{questionnaireId,jdbcType=INTEGER}, 
+    values (#{id,jdbcType=INTEGER}, #{questionnaireTitle,jdbcType=VARCHAR}, #{questionnaireId,jdbcType=INTEGER},
       #{state,jdbcType=INTEGER})
   </insert>
     <insert id="insertSelective" parameterType="com.questionnaire.entity.QuestionnaireContextTitle">
