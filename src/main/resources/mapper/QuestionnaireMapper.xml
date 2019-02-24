@@ -143,7 +143,14 @@
         <include refid="Base_Column_List" />
         from
         t_questionnaire
-        where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 like #{search} order by id desc
+        where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 and title like '%${title}%' order by id
+    </select>
+    <select id="countBySearch" resultType="java.lang.Integer" parameterType="java.lang.String" >
+        select
+        count(id)
+        from
+        t_questionnaire
+        where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 and title like '%${title}%'
     </select>
 
     <insert id="insertRest" parameterType="com.questionnaire.entity.Questionnaire" >

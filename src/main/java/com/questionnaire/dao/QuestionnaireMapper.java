@@ -36,8 +36,8 @@ public interface QuestionnaireMapper {
     @Select("select count(id) from t_questionnaire where teacher_id=#{teacherId} and state=#{state}")
     int countByState(@Param("teacherId")Integer teacherId, @Param("state")Integer state);
 
-    Page<Questionnaire> selectQuestionnaireBySearch(@Param("teacherId")Integer teacherId, @Param("search")String search);
+    Page<Questionnaire> selectQuestionnaireBySearch(@Param("teacherId")Integer teacherId, @Param("title")String title);
 
-    @Select("select count(id) from t_questionnaire where teacher_id=#{teacherId} and state!=-1 like '%{search}%'")
-    int countBySearch(@Param("teacherId")Integer teacherId, @Param("search")String search);
+//    @Select("select count(id) from t_questionnaire where teacher_id=#{teacherId} and state!=-1 and title like "+"'%"+",#{title},"+"%'")
+    int countBySearch(@Param("teacherId")Integer teacherId, @Param("title")String title);
 }

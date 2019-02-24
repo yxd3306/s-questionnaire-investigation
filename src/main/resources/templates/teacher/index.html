@@ -154,6 +154,8 @@
     var pageNum = 0;
     var thisPage = 1;
     var pageSize = 5;
+    var initSearchText='';
+    var initSearchObj='';
 
     init();
     initSearch();
@@ -199,15 +201,15 @@
                     pageNum: pageNum,
                     current: 6,
                     backfun: function (e) {
-                        console.log()
-                        if ('请选择' == $('#select-list').val()) {
+                        console.log(e)
+                        if (('请选择' == $('#select-list').val())&&initSearchText=='') {
                             var data = {
                                 id: common.getCookie("teacherUserId"),
                                 currentPage: e.current,
                                 pageSize: pageSize
                             }
                             initData(data)
-                        } else {
+                        } else if(('请选择' != $('#select-list').val())&&initSearchText==''){
                             var data = {
                                 state: $('#select-list').val(),
                                 id: common.getCookie("teacherUserId"),
@@ -215,6 +217,14 @@
                                 pageSize: pageSize
                             }
                             selectQuestionnaireByState(data)
+                        }else{
+                            var data = {
+                                search: initSearchText,
+                                id: common.getCookie("teacherUserId"),
+                                currentPage: thisPage,
+                                pageSize: pageSize
+                            }
+                            selectQuestionnaireBySearch(data,initSearchObj)
                         }
                     }
                 });
@@ -234,7 +244,18 @@
     function initSearch() {
         var searchOrange = $('#search-orange').searchMeme({
             onSearch: function (searchText) {
+                initSearchText=searchText;
                 console.log(searchText)
+
+
+                var data = {
+                    search: searchText,
+                    id: common.getCookie("teacherUserId"),
+                    currentPage: thisPage,
+                    pageSize: pageSize
+                }
+                selectQuestionnaireBySearch(data,searchOrange);
+
                 setTimeout(function () {
 
                     searchOrange.searchMeme({searchComplete: true});
@@ -244,13 +265,6 @@
                     $('.panel').addClass('go-green').animate({'height': 200}, 500);
 
                 }, 3000);
-                var data = {
-                    search: searchText,
-                    id: common.getCookie("teacherUserId"),
-                    currentPage: thisPage,
-                    pageSize: pageSize
-                }
-                selectQuestionnaireBySearch(data,searchOrange);
             }
             , buttonPlacement: 'left', button: 'orange'
         });
@@ -582,6 +596,7 @@
                         index++;
                         console.log(index);
                     })
+
                     $(".zxf_pagediv").createPage({
                         pageNum: pageNum,
                         current: 6,
@@ -678,23 +693,105 @@
     }
 
     function selectQuestionnaireBySearch(data,searchOrange) {
-        // if(data!=null){
-        //     common.ajaxSend(
-        //         '/teacher/selectQuestionnaireBySearch',
-        //         data,
-        //         function (e) {
-        //             if(e.code==1){
-        //                 searchOrange.searchMeme({searchComplete: true});
-        //                 var pageData=e.data;
-        //                 console.log(pageData);
-        //             }
-        //         },
-        //         function () {
-        //
-        //         },
-        //         false
-        //     )
-        // }
+        if(data!=null){
+            common.ajaxSend(
+                '/teacher/selectQuestionnaireBySearch',
+                data,
+                function (e) {
+                    if(e.code==1){
+                        if(searchOrange!=null)
+                            searchOrange.searchMeme({searchComplete: true});
+                        var pageData=e.data;
+                        pageNum = pageData.totalPage
+                        index = ((data.currentPage - 1) * data.pageSize + 1)
+                        var html = '';
+                        $('.data-body').children().remove();
+                        $.each(pageData.items, function (i, v) {
+                            if (v.questionnaireState == 0) {
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '<td class="td">' +
+                                    '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()" />' +
+                                    '<label  for="' + v.questionnaireId + '"></label >' +
+                                    '</td>' +
+                                    '<td class="td">' + index + '</td>' +
+                                    '<td >' +
+                                    '<span>' + v.questionnaireTitle + '</span>' +
+                                    '</td>' +
+                                    '<td class="ok td">已完成</td>' +
+                                    '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                    '<td class="td">' +
+                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                    '|' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '|' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '</td>' +
+                                    '</tr>'
+                            } else if (v.questionnaireState == 1) {
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '<td class="td">' +
+                                    '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                    '<label  for="' + v.questionnaireId + '"></label >' +
+                                    '</td>' +
+                                    '<td class="td">' + index + '</td>' +
+                                    '<td class="td">' +
+                                    '<span>' + v.questionnaireTitle + '</span>' +
+                                    '</td>' +
+                                    '<td class="draft td">草稿</td>' +
+                                    '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                    '<td class="td">' +
+                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                    '|' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '|' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '</td>' +
+                                    '</tr>'
+                            } else if (v.questionnaireState == 2) {
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '<td class="td">' +
+                                    '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                    '<label  for="' + v.questionnaireId + '"></label >' +
+                                    '</td>' +
+                                    '<td class="td">' + index + '</td>' +
+                                    '<td class="td">' +
+                                    '<span>' + v.questionnaireTitle + '</span>' +
+                                    '</td>' +
+                                    '<td class="wait td">已发布</td>' +
+                                    '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                    '<td class="td">' +
+                                    '<button class="update prohibit">修改</button>' +
+                                    '|' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '|' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '</td>' +
+                                    '</tr>'
+                            }
+                            $('.data-body').append(html);
+                            index++;
+                            console.log(index);
+                        })
+                        $(".zxf_pagediv").createPage({
+                            pageNum: pageNum,
+                            current: 6,
+                            backfun: function (e) {
+                            }
+                        });
+                    }
+                },
+                function () {
+                    $('.data-body').children().remove();
+                    $(".zxf_pagediv").createPage({
+                        pageNum: 1,
+                        current: 6,
+                        backfun: function (e) {
+                        }
+                    });
+                },
+                false
+            )
+        }
     }
 
 
