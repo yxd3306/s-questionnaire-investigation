@@ -14,4 +14,10 @@ public interface StudentService {
     JSONObject login(HttpServletRequest request);
 
     JSONObject register(HttpServletRequest request);
+
+    JSONObject selectQuestionnaires(HttpServletRequest request);
+
+    JSONObject selectQuestionnaireByStateForStudentId(HttpServletRequest request);
+
+    JSONObject selectQuestionnaireById(HttpServletRequest request);
 }

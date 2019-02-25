@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>问卷网-创建测评</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../static/student/css/queryInfo.css">
+    <link rel="stylesheet" href="../../static/teacher/css/addInfo.css">
+    <script src="../../static/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../../static/js/common.js"></script>
+
+    <link rel="stylesheet" href="../../static/css/jquery-ui.min.css">
+    <script src="//apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+</head>
+<body>
+
+<nav class="top-bar">
+    <div class="top-bar-logo">
+        <a href="/teacher/index.html">
+            <img class="top-bar-logo-img" src="../../static/teacher/img/logo_dog.jpg">
+        </a>
+    </div>
+    <div class="head-nav ">
+        <a href="/teacher/index.html">
+            <img src="../../static/teacher/img/my.png">
+            <span>我的问卷</span>
+        </a>
+        &nbsp;
+        <a href="javascript:void(0)">
+            <span>|</span>
+        </a>
+        &nbsp;
+        <a>
+            <img src="../../static/teacher/img/user.png">
+            <span id="userInfo">userInfo</span>
+        </a>
+        &nbsp;
+        <a>
+
+            <img src="../../static/teacher/img/remind.png">
+            <span>消息</span>
+        </a>
+        &nbsp;
+        <a href="/teacher/login.html">
+            <img src="../../static/teacher/img/out.png">
+            <span>退出</span>
+        </a>
+    </div>
+</nav>
+
+<nav class="info-body">
+    <div class="info-hade"></div>
+    <div class="info-list">
+        <div class="info-list-title">
+            <span class="title" id="title"></span>
+            <div class="info-list-context">
+                <div class="list-context-info">
+                    
+                </div>
+            </div>
+            <button class="list-context-submit">
+                提交
+            </button>
+        </div>
+    </div>
+
+
+</nav>
+
+</body>
+<script type="text/javascript">
+    var questionnaireId='';
+    var state=-1;
+    var userid='';
+    var userName=''
+    $(function () {
+        userName = common.getCookie("studentUserName");
+        userid = common.getCookie("studentUserId");
+        var path = window.location.pathname;
+        questionnaireId= path.split("/")[3];
+        state=common.getCookie("state");
+        $('#userInfo').html(userName);
+
+        var data={
+            questionnaireId:questionnaireId,
+            state:state
+        }
+        initData(data)
+        buttonClick()
+    })
+
+    function initData(data) {
+        common.ajaxSend(
+            '/student/selectQuestionnaireById',
+            data,
+            function (e) {
+                if(e.code==1){
+                    var restData=e.data;
+                    var titleLength = restData.questionnaireContextTitles.length;
+                    var contextLength = restData.questionnaireContexts.length;
+                    var index = 0;
+                    $('#title').html(restData.questionnaireTitle)
+                    var html='';
+                    for (var i = 0; i < titleLength; i++) {
+                        var html='';
+                        html+='<ul class="data">' +
+                            '                        <li class="title-tag" title-id="'+restData.questionnaireContextTitles[i].id+'">' +
+                            '                            '+(i+1)+'、'+restData.questionnaireContextTitles[i].questionnaireTitle+'' +
+                            '                        </li>';
+                        for (var j = 0; j < contextLength / titleLength; j++) {
+                            html+='                        <li>' +
+                            '                            <input id="'+restData.questionnaireContexts[index].id+'" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="1" />' +
+                            '                            <label  for="'+restData.questionnaireContexts[index].id+'"></label >' +
+                            '                            '+restData.questionnaireContexts[index].context+'' +
+                            '                        </li>' ;
+                            index++;
+                        }
+                        html+='                    </ul>'
+                        $('.list-context-info').append(html);
+                    }
+                    
+                    // html='<ul class="data">' +
+                    //     '                        <li>' +
+                    //     '                            1、下列哪些属于NoSql?' +
+                    //     '                        </li>' +
+                    //     '                        <li>' +
+                    //     '                            <input id="1" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="1" />' +
+                    //     '                            <label  for="1"></label >' +
+                    //     '                            A:mysql' +
+                    //     '                        </li>' +
+                    //     '                        <li>' +
+                    //     '                            <input id="2" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="1" />' +
+                    //     '                            <label  for="2"></label >' +
+                    //     '                            B:redis' +
+                    //     '                        </li>' +
+                    //     '                        <li>' +
+                    //     '                            <input id="3" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="1" />' +
+                    //     '                            <label  for="3"></label >' +
+                    //     '                            C:MongoDB' +
+                    //     '                        </li>' +
+                    //     '                        <li>' +
+                    //     '                            <input id="4" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="1" />' +
+                    //     '                            <label  for="4"></label >' +
+                    //     '                            D:oracle' +
+                    //     '                        </li>' +
+                    //     '                    </ul>'
+
+                    
+
+                }
+            },function () {
+
+            }
+        )
+    }
+
+    function buttonClick() {
+        $('.list-context-submit').click(function () {
+            var titles = new Array();
+            var contexts = new Array();
+            for(var i=0;i<$('.data').find(".title-tag").length;i++){
+                titles=titles.concat($($('.data').find(".title-tag")[i]).attr('title-id').trim())
+                for(var j=0;j<$($('.data').find(".title-tag")[i]).siblings().find('input').length;j++){
+                    var input = $($($('.data').find(".title-tag")[i]).siblings()[j]).find('input')
+                    if($(input).is(':checked')){
+                        contexts=contexts.concat($(input).attr('id'));
+                    }
+                }
+            }
+            var data={
+                userid:userid,
+                titles:titles,
+                contexts:contexts
+            }
+            submitQuestionnaire(data);
+        })
+    }
+
+    function submitQuestionnaire(data) {
+        // TODO
+    }
+
+
+</script>
+</html>

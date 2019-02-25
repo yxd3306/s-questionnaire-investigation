@@ -4,7 +4,7 @@
     <title>问卷网-教师端</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../../static/teacher/css/index.css">
+    <link rel="stylesheet" href="../../static/css/index.css">
     <link rel="stylesheet" href="../../static/plugin/select/css/jquery.searchableSelect.css">
     <link rel="stylesheet" href="../../static/plugin/page/css/zxf_page.css">
     <link rel="stylesheet" href="../../static/plugin/search/css/demo.css">
@@ -156,6 +156,7 @@
     var pageSize = 5;
     var initSearchText='';
     var initSearchObj='';
+    var releaseIndex=1;
 
     init();
     initSearch();
@@ -165,10 +166,11 @@
             var userName = common.getCookie("teacherUserName");
             $('#userInfo').html(userName);
             // 加载下拉框插件
-            $('#select-list').append('<option value="请选择" class="select-list-info">请选择</option>' +
+            $('#select-list').append('<option value="10" class="select-list-info">请选择</option>' +
                 '<option value="1" class="select-list-info">草稿</option>' +
                 '<option value="2" class="select-list-info">已发布</option>' +
-                '<option value="0" class="select-list-info">已完成</option>'
+                '<option value="3" class="select-list-info">待收回</option>' +
+                '<option value="4" class="select-list-info">已完成</option>'
             )
             $('#select-list').searchableSelect({
                 "afterSelectItem": function () {
@@ -182,9 +184,11 @@
                         selectQuestionnaireByState(data)
                     } else if ($('#select-list').val() == 2) {
                         selectQuestionnaireByState(data)
-                    } else if ($('#select-list').val() == 0) {
+                    } else if ($('#select-list').val() == 4) {
                         selectQuestionnaireByState(data)
-                    } else {
+                    } else if($('#select-list').val() == 3){
+                        selectQuestionnaireByState(data)
+                    }else {
                         data = {
                             id: common.getCookie("teacherUserId"),
                             currentPage: thisPage,
@@ -201,15 +205,15 @@
                     pageNum: pageNum,
                     current: 6,
                     backfun: function (e) {
-                        console.log(e)
-                        if (('请选择' == $('#select-list').val())&&initSearchText=='') {
+                        releaseIndex=e.current;
+                        if ((10 == $('#select-list').val())&&initSearchText=='') {
                             var data = {
                                 id: common.getCookie("teacherUserId"),
                                 currentPage: e.current,
                                 pageSize: pageSize
                             }
                             initData(data)
-                        } else if(('请选择' != $('#select-list').val())&&initSearchText==''){
+                        } else if((10 != $('#select-list').val())&&initSearchText==''){
                             var data = {
                                 state: $('#select-list').val(),
                                 id: common.getCookie("teacherUserId"),
@@ -217,11 +221,11 @@
                                 pageSize: pageSize
                             }
                             selectQuestionnaireByState(data)
-                        }else{
+                        }else if(initSearchText!=''){
                             var data = {
                                 search: initSearchText,
                                 id: common.getCookie("teacherUserId"),
-                                currentPage: thisPage,
+                                currentPage: e.current,
                                 pageSize: pageSize
                             }
                             selectQuestionnaireBySearch(data,initSearchObj)
@@ -234,7 +238,7 @@
 
             buildQuestionnaire();
 
-            otherButtonClick()
+            otherButtonClick ()
 
 
         });
@@ -245,9 +249,6 @@
         var searchOrange = $('#search-orange').searchMeme({
             onSearch: function (searchText) {
                 initSearchText=searchText;
-                console.log(searchText)
-
-
                 var data = {
                     search: searchText,
                     id: common.getCookie("teacherUserId"),
@@ -349,84 +350,122 @@
             data,
             function (e) {
                 if (e.code == 1) {
+
+
                     var pageData = e.data;
-                    pageNum = pageData.totalPage;
-                    $('.not-data').addClass('hide-mode');
-                    $('.list-data').removeClass('show-mode');
-                    $('.data-body').children().remove();
-                    var html = '';
-                    index = ((data.currentPage - 1) * data.pageSize + 1)
-                    $.each(pageData.items, function (i, v) {
-                        if (v.questionnaireState == 0) {
-                            // 已完成
-                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
-                                '<td class="td">' +
-                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()" />' +
-                                '<label  for="' + v.questionnaireId + '"></label >' +
-                                '</td>' +
-                                '<td class="td">' + index + '</td>' +
-                                '<td >' +
-                                '<span>' + v.questionnaireTitle + '</span>' +
-                                '</td>' +
-                                '<td class="ok td">已完成</td>' +
-                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
-                                '<td class="td">' +
-                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
-                                '|' +
-                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
-                                '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
-                                '</td>' +
-                                '</tr>'
-                        } else if (v.questionnaireState == 1) {
-                            // 草稿
-                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
-                                '<td class="td">' +
-                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
-                                '<label  for="' + v.questionnaireId + '"></label >' +
-                                '</td>' +
-                                '<td class="td">' + index + '</td>' +
-                                '<td class="td">' +
-                                '<span>' + v.questionnaireTitle + '</span>' +
-                                '</td>' +
-                                '<td class="draft td">草稿</td>' +
-                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
-                                '<td class="td">' +
-                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
-                                '|' +
-                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
-                                '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
-                                '</td>' +
-                                '</tr>'
-                        } else if (v.questionnaireState == 2) {
-                            // 已发布
-                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
-                                '<td class="td">' +
-                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
-                                '<label  for="' + v.questionnaireId + '"></label >' +
-                                '</td>' +
-                                '<td class="td">' + index + '</td>' +
-                                '<td class="td">' +
-                                '<span>' + v.questionnaireTitle + '</span>' +
-                                '</td>' +
-                                '<td class="wait td">已发布</td>' +
-                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
-                                '<td class="td">' +
-                                '<button class="update prohibit">修改</button>' +
-                                '|' +
-                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
-                                '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
-                                '</td>' +
-                                '</tr>'
+                    if(pageData.currentPage>1&&pageData.items.length==0){
+                        var rData = {
+                            id: common.getCookie("teacherUserId"),
+                            currentPage: pageData.currentPage-1,
+                            pageSize: pageSize
                         }
-                        index++;
-                        $('.data-body').append(html);
-                    })
+                        initData(rData);
+                    }else{
+                        pageNum = pageData.totalPage;
+                        $('.not-data').addClass('hide-mode');
+                        $('.list-data').removeClass('show-mode');
+                        $('.data-body').children().remove();
+                        var html = '';
+                        index = ((data.currentPage - 1) * data.pageSize + 1)
+                        $.each(pageData.items, function (i, v) {
+                            if (v.questionnaireState == 3) {
+                                // 已完成
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '<td class="td">' +
+                                    '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()" />' +
+                                    '<label  for="' + v.questionnaireId + '"></label >' +
+                                    '</td>' +
+                                    '<td class="td">' + index + '</td>' +
+                                    '<td >' +
+                                    '<span>' + v.questionnaireTitle + '</span>' +
+                                    '</td>' +
+                                    '<td class="ok td">待收回</td>' +
+                                    '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                    '<td class="td">' +
+                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                    '|' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '|' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '</td>' +
+                                    '</tr>'
+                            } else if (v.questionnaireState == 1) {
+                                // 草稿
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '<td class="td">' +
+                                    '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                    '<label  for="' + v.questionnaireId + '"></label >' +
+                                    '</td>' +
+                                    '<td class="td">' + index + '</td>' +
+                                    '<td class="td">' +
+                                    '<span>' + v.questionnaireTitle + '</span>' +
+                                    '</td>' +
+                                    '<td class="draft td">草稿</td>' +
+                                    '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                    '<td class="td">' +
+                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                    '|' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '|' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '</td>' +
+                                    '</tr>'
+                            } else if (v.questionnaireState == 2) {
+                                // 已发布
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '<td class="td">' +
+                                    '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                    '<label  for="' + v.questionnaireId + '"></label >' +
+                                    '</td>' +
+                                    '<td class="td">' + index + '</td>' +
+                                    '<td class="td">' +
+                                    '<span>' + v.questionnaireTitle + '</span>' +
+                                    '</td>' +
+                                    '<td class="wait td">已发布</td>' +
+                                    '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                    '<td class="td">' +
+                                    '<button class="update prohibit">修改</button>' +
+                                    '|' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '|' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '</td>' +
+                                    '</tr>'
+                            } else if(v.questionnaireState==4){
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '<td class="td">' +
+                                    '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                    '<label  for="' + v.questionnaireId + '"></label >' +
+                                    '</td>' +
+                                    '<td class="td">' + index + '</td>' +
+                                    '<td class="td">' +
+                                    '<span>' + v.questionnaireTitle + '</span>' +
+                                    '</td>' +
+                                    '<td class="wait td">已完成</td>' +
+                                    '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                    '<td class="td">' +
+                                    '<button class="update prohibit">修改</button>' +
+                                    '|' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '|' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '</td>' +
+                                    '</tr>'
+                            }
+                            index++;
+                            $('.data-body').append(html);
+                        })
+                    }
+                    $(".zxf_pagediv").createPage({
+                        pageNum: pageNum,
+                        current: 6,
+                        backfun: function (e) {
+                        }
+                    });
                 } else {
                     $('.list-data').addClass('show-mode');
                     $('.not-data').removeClass('hide-mode');
+                    $(".zxf_pagediv").remove();
                 }
             },
             function (e) {
@@ -468,10 +507,18 @@
                 "/teacher/deleteQuestionnaireById",
                 data,
                 function (e) {
-                    if ($(obj).parent().parent().siblings().length == 0)
-                        window.location.reload();
-                    else
-                        $(obj).parent().parent().remove();
+                    if(e.code==1){
+                        var data = {
+                            id: common.getCookie("teacherUserId"),
+                            currentPage: releaseIndex,
+                            pageSize: pageSize
+                        }
+                        initData(data);
+                    }
+                    // if ($(obj).parent().parent().siblings().length == 0){
+                    //
+                    // } else
+                    //     $(obj).parent().parent().remove();
                 },
                 function (e) {
 
@@ -491,6 +538,12 @@
                 data,
                 function (e) {
                     if (e.code == 1) {
+                        data = {
+                            id: common.getCookie("teacherUserId"),
+                            currentPage: releaseIndex,
+                            pageSize: pageSize
+                        }
+                        initData(data);
                         /*$.each(objs, function (i, v) {
                             $(v).addClass("wait")
                             $(v).text("已发布")
@@ -502,7 +555,7 @@
                             $(v).prop("checked", false);
                             $(v).attr('state', 2)
                         })*/
-                        window.location.reload()
+                        // window.location.reload()
                     } else {
                         return;
                     }
@@ -527,11 +580,10 @@
                     var pageData = e.data;
                     pageNum = pageData.totalPage
                     index = ((data.currentPage - 1) * data.pageSize + 1)
-                    console.log("currentPage=" + data.currentPage)
                     $('.data-body').children().remove();
                     var html = '';
                     $.each(pageData.items, function (i, v) {
-                        if (v.questionnaireState == 0) {
+                        if (v.questionnaireState==3) {
                             html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
                                 '<td class="td">' +
                                 '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()" />' +
@@ -541,7 +593,7 @@
                                 '<td >' +
                                 '<span>' + v.questionnaireTitle + '</span>' +
                                 '</td>' +
-                                '<td class="ok td">已完成</td>' +
+                                '<td class="ok td">待收回</td>' +
                                 '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                 '<td class="td">' +
                                 '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
@@ -591,10 +643,29 @@
                                 '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
                                 '</td>' +
                                 '</tr>'
+                        } else if(v.questionnaireState==4){
+                            html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                '<td class="td">' +
+                                '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                '<label  for="' + v.questionnaireId + '"></label >' +
+                                '</td>' +
+                                '<td class="td">' + index + '</td>' +
+                                '<td class="td">' +
+                                '<span>' + v.questionnaireTitle + '</span>' +
+                                '</td>' +
+                                '<td class="wait td">已完成</td>' +
+                                '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                '<td class="td">' +
+                                '<button class="update prohibit">修改</button>' +
+                                '|' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '|' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '</td>' +
+                                '</tr>'
                         }
                         $('.data-body').append(html);
                         index++;
-                        console.log(index);
                     })
 
                     $(".zxf_pagediv").createPage({
@@ -699,7 +770,7 @@
                 data,
                 function (e) {
                     if(e.code==1){
-                        if(searchOrange!=null)
+                        if(searchOrange!=null&&searchOrange!='')
                             searchOrange.searchMeme({searchComplete: true});
                         var pageData=e.data;
                         pageNum = pageData.totalPage
@@ -707,7 +778,7 @@
                         var html = '';
                         $('.data-body').children().remove();
                         $.each(pageData.items, function (i, v) {
-                            if (v.questionnaireState == 0) {
+                            if (v.questionnaireState == 3) {
                                 html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
                                     '<td class="td">' +
                                     '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()" />' +
@@ -717,7 +788,7 @@
                                     '<td >' +
                                     '<span>' + v.questionnaireTitle + '</span>' +
                                     '</td>' +
-                                    '<td class="ok td">已完成</td>' +
+                                    '<td class="ok td">待收回</td>' +
                                     '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                     '<td class="td">' +
                                     '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
@@ -767,10 +838,29 @@
                                     '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
+                            } else if(v.questionnaireState==4){
+                                html = '<tr class="data-info" date-id="' + v.questionnaireId + '">' +
+                                    '<td class="td">' +
+                                    '<input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()"/>' +
+                                    '<label  for="' + v.questionnaireId + '"></label >' +
+                                    '</td>' +
+                                    '<td class="td">' + index + '</td>' +
+                                    '<td class="td">' +
+                                    '<span>' + v.questionnaireTitle + '</span>' +
+                                    '</td>' +
+                                    '<td class="wait td">已完成</td>' +
+                                    '<td class="td">' + v.questionnaireCreateTime + '</td>' +
+                                    '<td class="td">' +
+                                    '<button class="update prohibit">修改</button>' +
+                                    '|' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '|' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '</td>' +
+                                    '</tr>'
                             }
                             $('.data-body').append(html);
                             index++;
-                            console.log(index);
                         })
                         $(".zxf_pagediv").createPage({
                             pageNum: pageNum,

@@ -40,4 +40,20 @@ public interface QuestionnaireMapper {
 
 //    @Select("select count(id) from t_questionnaire where teacher_id=#{teacherId} and state!=-1 and title like "+"'%"+",#{title},"+"%'")
     int countBySearch(@Param("teacherId")Integer teacherId, @Param("title")String title);
+
+
+    List<Questionnaire> selectQuestionnairesByState();
+
+    List<Questionnaire> selectQuestionnairesOk(@Param("id")Integer id);
+
+
+    Page<Questionnaire> selectByPrimaryKeys(List<Integer> ids);
+    int countByKey(List<Integer> ids);
+
+    Page<Questionnaire> selectByPrimaryKeysForStatte(@Param("list")List<Integer> ids,  @Param("state") Integer state);
+
+    int countByKeyByForStatte(@Param("list") List<Integer> ids, @Param("state")Integer state);
+
+
+    Questionnaire selectByPrimaryKeyAndState(@Param("id") Integer id, @Param("state") Integer state);
 }

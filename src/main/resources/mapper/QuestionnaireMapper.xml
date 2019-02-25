@@ -124,6 +124,7 @@
         t_questionnaire
         where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1
     </select>
+
     <select id="selectQuestionnaireByPage" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
         select
         <include refid="Base_Column_List" />
@@ -143,14 +144,71 @@
         <include refid="Base_Column_List" />
         from
         t_questionnaire
-        where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 and title like '%${title}%' order by id
+        where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 and title like '%${title}%' order by id desc
     </select>
+    <select id="selectByPrimaryKeys" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        t_questionnaire
+        where id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and (state=2 or state=3 or state=4) order by id desc
+    </select>
+
+    <select id="selectByPrimaryKeysForStatte" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        t_questionnaire
+        where id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and state=#{state,jdbcType=INTEGER} order by id desc
+    </select>
+    <select id="selectByPrimaryKeyAndState" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        t_questionnaire
+        where id =#{id,jdbcType=INTEGER}
+        and state=#{state,jdbcType=INTEGER}
+    </select>
+
+
     <select id="countBySearch" resultType="java.lang.Integer" parameterType="java.lang.String" >
         select
         count(id)
         from
         t_questionnaire
         where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 and title like '%${title}%'
+    </select>
+
+    <select id="countByKey" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+        select
+        count(id)
+        from
+        t_questionnaire
+        where id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and (state=2 or state=3 or state=4)
+    </select>
+
+    <select id="countByKeyByForStatte" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
+        select
+        count(id)
+        from
+        t_questionnaire
+        where id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and state = #{state,jdbcType=INTEGER}
     </select>
 
     <insert id="insertRest" parameterType="com.questionnaire.entity.Questionnaire" >
@@ -171,4 +229,21 @@
       state = -1
     where id = #{id,jdbcType=INTEGER} and state!=-1
   </update>
+
+
+    <select id="selectQuestionnairesByState" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        t_questionnaire
+        where state=2
+    </select>
+    <select id="selectQuestionnairesOk" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        t_questionnaire
+        where id=#{id,jdbcType=INTEGER} and state=3
+    </select>
+
 </mapper>

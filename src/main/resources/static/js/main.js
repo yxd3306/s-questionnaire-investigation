@@ -100,8 +100,11 @@
             "/student/login",
             data,
             function (e) {
-                if(e.code==1)
+                if(e.code==1){
+                    common.setCookie("studentUserName",e.data.username,7);
+                    common.setCookie("studentUserId",e.data.id,7);
                     window.location.href="/student/index.html";
+                }
                 else
                     alert(e.msg);
             },

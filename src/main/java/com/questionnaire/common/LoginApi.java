@@ -76,6 +76,10 @@ public class LoginApi {
         }
         return null;
     }
+    @RequestMapping("/student/{queryQuestionnaireById}/{questionnaireId}")
+    public String toInfoPage(@PathVariable String queryQuestionnaireById,@PathVariable Integer questionnaireId){
+        return "/student/info.html";
+    }
 
 
 

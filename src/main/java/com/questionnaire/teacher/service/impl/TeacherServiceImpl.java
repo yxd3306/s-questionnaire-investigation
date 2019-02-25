@@ -439,6 +439,7 @@ public class TeacherServiceImpl implements TeacherService {
             for (int i = 0; i < split.length; i++) {
                 String s = split[i];
                 questionnaire.setId(Integer.parseInt(s));
+                questionnaire.setReleaseTime(new Date());
                 questionnaire.setState(2);
                 restId += questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
             }

@@ -12,6 +12,7 @@ import java.util.List;
 public class RestQuestionnaireObject {
 
     private Integer questionnaireId;
+    private Integer teacherId;
     private Integer questionnaireTypeId;
 
     private String questionnaireTitle;
@@ -25,7 +26,8 @@ public class RestQuestionnaireObject {
     private List<QuestionnaireContext> questionnaireContexts;
     private List<QuestionnaireContextTitle> questionnaireContextTitles;
 
-
+    private List<Questionnaire> questionnaires;
+    private List<TeacherQuestionnaireStudent> teacherQuestionnaireStudents;
 
 
     public Integer getQuestionnaireId() {
@@ -34,6 +36,14 @@ public class RestQuestionnaireObject {
 
     public void setQuestionnaireId(Integer questionnaireId) {
         this.questionnaireId = questionnaireId;
+    }
+
+    public Integer getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(Integer teacherId) {
+        this.teacherId = teacherId;
     }
 
     public Integer getQuestionnaireTypeId() {
@@ -98,5 +108,21 @@ public class RestQuestionnaireObject {
 
     public void setQuestionnaireContextTitles(List<QuestionnaireContextTitle> questionnaireContextTitles) {
         this.questionnaireContextTitles = questionnaireContextTitles;
+    }
+
+    public List<Questionnaire> getQuestionnaires() {
+        return questionnaires;
+    }
+
+    public void setQuestionnaires(List<Questionnaire> questionnaires) {
+        this.questionnaires = questionnaires;
+    }
+
+    public List<TeacherQuestionnaireStudent> getTeacherQuestionnaireStudents() {
+        return teacherQuestionnaireStudents;
+    }
+
+    public void setTeacherQuestionnaireStudents(List<TeacherQuestionnaireStudent> teacherQuestionnaireStudents) {
+        this.teacherQuestionnaireStudents = teacherQuestionnaireStudents;
     }
 }

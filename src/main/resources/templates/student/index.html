@@ -3,10 +3,367 @@
 <head>
     <meta charset="UTF-8">
     <title>问卷星-学生端</title>
-    <link rel="stylesheet" type="text/css" href="../../static/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/student/css/info.css">
+    <link rel="stylesheet" href="../../static/css/index.css">
+    <link rel="stylesheet" href="../../static/plugin/select/css/jquery.searchableSelect.css">
+    <link rel="stylesheet" href="../../static/plugin/page/css/zxf_page.css">
+
+
     <script src="../../static/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../../static/js/common.js"></script>
+    <script src="../../static/plugin/select/js/jquery.searchableSelect.js"></script>
+    <script src="../../static/plugin/page/js/zxf_page.js"></script>
 </head>
 <body>
 
+
+<nav class="top-bar">
+    <div class="top-bar-logo">
+        <a href="javascript:void(0)">
+            <img class="top-bar-logo-img" src="../../static/teacher/img/logo_dog.jpg">
+        </a>
+    </div>
+    <div class="head-nav ">
+        <a href="/student/index.html">
+            <img src="../../static/teacher/img/my.png">
+            <span>我的问卷</span>
+        </a>
+        &nbsp;
+        <a href="javascript:void(0)">
+            <span>|</span>
+        </a>
+        &nbsp;
+        <a>
+            <img src="../../static/teacher/img/user.png">
+            <span id="userInfo">userInfo</span>
+        </a>
+        &nbsp;
+        <a>
+
+            <img src="../../static/teacher/img/remind.png">
+            <span>消息</span>
+        </a>
+        &nbsp;
+        <a href="/teacher/login.html">
+            <img src="../../static/teacher/img/out.png">
+            <span>退出</span>
+        </a>
+    </div>
+</nav>
+<nav class="s-list-body">
+    <table class="table">
+        <caption>
+            <select id="select-list">
+            </select>
+            <button class="delete-button">
+                <img src="../../static/student/img/delete.png">
+                删除
+            </button>
+        </caption>
+        <thead>
+        <tr>
+            <td>
+                <button class="all-list hav-all-lis">全选</button>
+            </td>
+            <td>序号</td>
+            <td>标题</td>
+            <td>状态</td>
+            <td>发布时间</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tbody class="s-data-list">
+        </tbody>
+    </table>
+</nav>
+
+
+<nav>
+    <div class="zxf_pagediv"></div>
+</nav>
+
 </body>
+<script type="text/javascript">
+
+    var studentId = 0;
+    var index = 0;
+    var pageNum = 0;
+    var thisPage = 1;
+    var pageSize = 5;
+
+    init();
+
+
+    function init() {
+        $(document).ready(function () {
+            var userName = common.getCookie("studentUserName");
+            studentId = common.getCookie("studentUserId");
+            $('#userInfo').html(userName);
+
+            $('#select-list').append('<option value="10" class="select-list-info">全部</option>' +
+                '<option value="2" class="select-list-info">进行中</option>' +
+                '<option value="3" class="select-list-info">已提交</option>' +
+                '<option value="4" class="select-list-info">已结束</option>'
+            )
+            $('#select-list').searchableSelect({
+                "afterSelectItem": function () {
+                    var data = {
+                        studentId: studentId,
+                        currentPage: thisPage,
+                        pageSize: pageSize,
+                        state: $('#select-list').val()
+                    }
+                    if ($('#select-list').val() == 10) {
+                        data = {
+                            studentId: studentId,
+                            currentPage: thisPage,
+                            pageSize: pageSize
+                        }
+                        initData(data);
+                    } else if ($('#select-list').val() == 2) {
+                        selectQuestionnaireByStateForStudentId(data)
+                    } else if ($('#select-list').val() == 3) {
+                        selectQuestionnaireByStateForStudentId(data)
+                    } else {
+                        selectQuestionnaireByStateForStudentId(data)
+                    }
+                }
+            })
+
+            $(".zxf_pagediv").createPage({
+                pageNum: pageNum,
+                current: 6,
+                backfun: function (e) {
+                    var data = {
+                        studentId: studentId,
+                        currentPage: e.current,
+                        pageSize: pageSize,
+                        state: $('#select-list').val()
+                    }
+                    if ($('#select-list').val() == 10) {
+                        data = {
+                            studentId: studentId,
+                            currentPage: e.current,
+                            pageSize: pageSize
+                        }
+                        initData(data);
+                    } else if ($('#select-list').val() == 2) {
+                        selectQuestionnaireByStateForStudentId(data)
+                    } else if ($('#select-list').val() == 3) {
+                        selectQuestionnaireByStateForStudentId(data)
+                    } else {
+                        selectQuestionnaireByStateForStudentId(data)
+                    }
+                }
+            })
+            otherButtonClick();
+        })
+    }
+
+    // 获取两组数据   state为2的数据 state为0的数据（根据userid查）
+    function initData(data) {
+
+        common.ajaxSend(
+            '/student/selectQuestionnaires',
+            data,
+            function (e) {
+                if (e.code == 1) {
+                    var html = '';
+                    $('.s-data-list').children().remove();
+                    var pageData = e.data;
+                    pageNum = pageData.totalPage;
+                    index = ((data.currentPage - 1) * data.pageSize + 1)
+                    $.each(pageData.items, function (i, v) {
+                        html = '<tr class="s-data-info">' +
+                            '                <td>' +
+                            '                    <input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()" />' +
+                            '                    <label  for="' + v.questionnaireId + '"></label >' +
+                            '                </td>' +
+                            '                <td>' + index + '</td>' +
+                            '                <td>' + v.questionnaireTitle + '</td>';
+                        if (v.questionnaireState == 2) {
+                            html += '<td class="wait">进行中</td>'
+
+                        } else if (v.questionnaireState == 3) {
+                            html += '<td class="ok">已提交</td>';
+                        } else {
+                            html += '<td class="over">已结束</td>';
+                        }
+                        html += '<td>' + v.questionnaireReleaseTime + '</td>' +
+                            '                <td>' +
+                            '                    <button class="query" onClick="doSomething(' + v.questionnaireId + ','+v.questionnaireState+',this)">查看</button>' +
+                            '                    |' +
+                            '                    <button class="delete"onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                            '                </td>' +
+                            ' </tr>';
+                        $('.s-data-list').append(html);
+                        index++;
+                    })
+                    $(".zxf_pagediv").createPage({
+                        pageNum: pageNum,
+                        current: 6,
+                        backfun: function (e) {
+                        }
+                    });
+                }
+            },
+            function () {
+
+            },
+            false
+        )
+    }
+
+
+    function changeCheck() {
+        var leng = '';
+        for (var i = 0; i < $("input[name=checkbox]").length; i++) {
+            if ($($("input[name=checkbox]")[i]).is(":checked")) {
+                leng++;
+            }
+        }
+        if (leng == $("input[name=checkbox]").length) {
+            $('.all-list').html("取消全选")
+        } else {
+            $('.all-list').html("全选")
+        }
+
+
+    }
+
+    function otherButtonClick() {
+        var ids = new Array();
+        var states = new Array();
+        var dos = new Array();
+        var checks = new Array();
+        $('.has-data-release').on('click', function () {
+            $.each($('input:checkbox'), function () {
+                if (this.checked && $(this).attr('state') == 1) {
+                    ids = ids.concat($(this).val());
+                    states = states.concat($($(this).parent().siblings()[1]))
+                    dos = dos.concat($($(this).parent().siblings()[2]).find('.update'))
+                    checks = checks.concat($(this));
+                    $('.all-list').html("全选")
+                } else {
+                    $(this).prop("checked", false);
+                    $('.all-list').html("全选")
+                }
+            });
+
+
+            var data = {
+                ids: ids.toString()
+            }
+            release(data, states, dos, checks);
+        })
+
+        $('.all-list').on('click', function () {
+            if ('全选' == $('.all-list').text()) {
+                for (var i = 0; i < $("input[name=checkbox]").length; i++) {
+                    if ($($("input[name=checkbox]")[i]).not(":checked")) {
+                        $($("input[name=checkbox]")[i]).prop("checked", true);
+                        $('.all-list').html("取消全选")
+                    }
+                }
+            } else {
+                for (var i = 0; i < $("input[name=checkbox]").length; i++) {
+                    if ($($("input[name=checkbox]")[i]).is(":checked")) {
+                        $($("input[name=checkbox]")[i]).prop("checked", false);
+                        $('.all-list').html("全选")
+                    }
+                }
+            }
+        })
+    }
+
+
+    function selectQuestionnaireByStateForStudentId(data) {
+        common.ajaxSend(
+            '/student/selectQuestionnaireByStateForStudentId',
+            data,
+            function (e) {
+                if (e.code == 1) {
+                    var html = '';
+                    $('.s-data-list').children().remove();
+                    var pageData = e.data;
+                    pageNum = pageData.totalPage;
+                    index = ((data.currentPage - 1) * data.pageSize + 1)
+                    $.each(pageData.items, function (i, v) {
+                        html = '<tr class="s-data-info">' +
+                            '                <td>' +
+                            '                    <input id="' + v.questionnaireId + '" state="' + v.questionnaireState + '" class="chat-button-location-radio-input" type="checkbox" name="checkbox" value="' + v.questionnaireId + '" onClick="changeCheck()" />' +
+                            '                    <label  for="' + v.questionnaireId + '"></label >' +
+                            '                </td>' +
+                            '                <td>' + index + '</td>' +
+                            '                <td>' + v.questionnaireTitle + '</td>';
+                        if (v.questionnaireState == 2) {
+                            html += '<td class="wait">进行中</td>'
+
+                        } else if (v.questionnaireState == 3) {
+                            html += '<td class="ok">已提交</td>';
+                        } else {
+                            html += '<td class="over">已结束</td>';
+                        }
+                        html += '<td>' + v.questionnaireReleaseTime + '</td>' +
+                            '                <td>' +
+                            '                    <button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                            '                    |' +
+                            '                    <button class="delete"onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                            '                </td>' +
+                            ' </tr>';
+                        $('.s-data-list').append(html);
+                        index++;
+                    })
+                    $(".zxf_pagediv").createPage({
+                        pageNum: pageNum,
+                        current: 6,
+                        backfun: function (e) {
+                        }
+                    });
+                }
+            },
+            function () {
+
+            },
+            false
+        )
+    }
+
+
+    function doSomething(id,state, obj) {
+
+        var type = $(obj).text();
+        var data = {
+            questionnaireId: id
+        }
+        if (type == "查看") {
+            common.setCookie('state',state,7);
+            window.location.href = '/student/queryQuestionnaireById/' + id + '';
+        } else if (type == "删除") {
+            common.ajaxSend(
+                "/teacher/deleteQuestionnaireById",
+                data,
+                function (e) {
+                    if(e.code==1){
+                        var data = {
+                            id: common.getCookie("teacherUserId"),
+                            currentPage: releaseIndex,
+                            pageSize: pageSize
+                        }
+                        initData(data);
+                    }
+                    // if ($(obj).parent().parent().siblings().length == 0){
+                    //
+                    // } else
+                    //     $(obj).parent().parent().remove();
+                },
+                function (e) {
+
+                }
+            )
+        }
+
+    }
+
+</script>
 </html>
