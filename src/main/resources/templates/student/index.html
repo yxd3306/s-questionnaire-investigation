@@ -306,7 +306,7 @@
                         }
                         html += '<td>' + v.questionnaireReleaseTime + '</td>' +
                             '                <td>' +
-                            '                    <button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                            '                    <button class="query" onClick="doSomething(' + v.questionnaireId + ','+v.questionnaireState+',this)">查看</button>' +
                             '                    |' +
                             '                    <button class="delete"onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
                             '                </td>' +

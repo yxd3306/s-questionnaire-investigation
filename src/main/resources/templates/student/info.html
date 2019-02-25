@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>问卷网-创建测评</title>
+    <title>问卷网-提交问卷</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../../static/student/css/queryInfo.css">
@@ -19,12 +19,12 @@
 
 <nav class="top-bar">
     <div class="top-bar-logo">
-        <a href="/teacher/index.html">
+        <a href="/student/index.html">
             <img class="top-bar-logo-img" src="../../static/teacher/img/logo_dog.jpg">
         </a>
     </div>
     <div class="head-nav ">
-        <a href="/teacher/index.html">
+        <a href="/student/index.html">
             <img src="../../static/teacher/img/my.png">
             <span>我的问卷</span>
         </a>
@@ -172,8 +172,9 @@
             }
             var data={
                 userid:userid,
-                titles:titles,
-                contexts:contexts
+                questionnaireId:questionnaireId,
+                titles:titles.toString(),
+                contexts:contexts.toString()
             }
             submitQuestionnaire(data);
         })
@@ -181,6 +182,20 @@
 
     function submitQuestionnaire(data) {
         // TODO
+        console.log(data);
+        common.ajaxSend(
+            '/student/submitQuestionnaire',
+            data,
+            function (e) {
+                if(e.code==1){
+                    window.history.go(-1);
+                }
+            },
+            function () {
+
+            }
+        )
+
     }
 
 

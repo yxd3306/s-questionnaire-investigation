@@ -20,4 +20,6 @@ public interface StudentService {
     JSONObject selectQuestionnaireByStateForStudentId(HttpServletRequest request);
 
     JSONObject selectQuestionnaireById(HttpServletRequest request);
+
+    JSONObject submitQuestionnaire(HttpServletRequest request);
 }

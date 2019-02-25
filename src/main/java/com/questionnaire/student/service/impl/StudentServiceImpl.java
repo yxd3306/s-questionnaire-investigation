@@ -6,10 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.questionnaire.common.page.PageBean;
 import com.questionnaire.common.util.BaseUtil;
 import com.questionnaire.common.util.DateUtil;
-import com.questionnaire.dao.QuestionnaireContextMapper;
-import com.questionnaire.dao.QuestionnaireContextTitleMapper;
-import com.questionnaire.dao.QuestionnaireMapper;
-import com.questionnaire.dao.TeacherQuestionnaireStudentMapper;
+import com.questionnaire.dao.*;
 import com.questionnaire.entity.*;
 import com.questionnaire.student.dao.StudentMapper;
 import com.questionnaire.student.entity.Student;
@@ -44,6 +41,8 @@ public class StudentServiceImpl implements StudentService {
     QuestionnaireContextTitleMapper questionnaireContextTitleMapper;
     @Autowired
     QuestionnaireContextMapper questionnaireContextMapper;
+    @Autowired
+    SubmitQuestionnaireMapper submitQuestionnaireMapper;
 
     @Override
     public JSONObject login(HttpServletRequest request) {
@@ -264,6 +263,43 @@ public class StudentServiceImpl implements StudentService {
             }
         }
 
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject submitQuestionnaire(HttpServletRequest request) {
+        TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+
+        Integer questionnaireId= Integer.parseInt(requestParam.get("questionnaireId"));
+        Integer studentId= Integer.parseInt(requestParam.get("userid"));
+        String titles = requestParam.get("titles");
+        String[] contexts = requestParam.get("contexts").split(",");
+        int restId=0;
+        if(null!=questionnaireId && questionnaireId>0
+            &&null!=studentId&&studentId>0
+            &&!titles.isEmpty()&&null!=titles
+            &&null!=contexts&&contexts.length>0){
+            Questionnaire questionnaire = new Questionnaire();
+            questionnaire.setId(questionnaireId);
+            questionnaire.setState(3);
+            restId+=questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
+            for (String context : contexts) {
+                SubmitQuestionnaire submitQuestionnaire = new SubmitQuestionnaire();
+                submitQuestionnaire.setQuestionnaireId(questionnaireId);
+                submitQuestionnaire.setStudentId(studentId);
+                submitQuestionnaire.setQuestionnaireContextId(Integer.parseInt(context));
+                submitQuestionnaire.setSubmitState(1);
+                restId+=submitQuestionnaireMapper.insert(submitQuestionnaire);
+            }
+            if(restId>0){
+                jsonObject.put("code",1);
+                jsonObject.put("msg","提交成功");
+            }
+        }else{
+            jsonObject.put("code",0);
+            jsonObject.put("msg","提交失败");
+        }
         return jsonObject;
     }
 }
