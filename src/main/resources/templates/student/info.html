@@ -56,12 +56,14 @@
     <div class="info-list">
         <div class="info-list-title">
             <span class="title" id="title"></span>
+            <br/>
+            <span class="release-time">发布时间:<span class="release-time-info"></span></span>
             <div class="info-list-context">
                 <div class="list-context-info">
                     
                 </div>
             </div>
-            <button class="list-context-submit">
+            <button class="list-context-submit hide-mode">
                 提交
             </button>
         </div>
@@ -84,11 +86,27 @@
         state=common.getCookie("state");
         $('#userInfo').html(userName);
 
-        var data={
-            questionnaireId:questionnaireId,
-            state:state
+        var data='';
+        if(state==2){
+            data  ={
+                questionnaireId:questionnaireId,
+                state:state
+
+            }
+            $('.list-context-submit').removeClass('hide-mode');
+            // 加载没有提交过的问卷
+            initData(data)
         }
-        initData(data)
+        if(state==3){
+            data={
+                questionnaireId:questionnaireId,
+                studentId:userid,
+                state:state
+            }
+
+            loadSubmitData(data);
+        }
+
         buttonClick()
     })
 
@@ -102,7 +120,8 @@
                     var titleLength = restData.questionnaireContextTitles.length;
                     var contextLength = restData.questionnaireContexts.length;
                     var index = 0;
-                    $('#title').html(restData.questionnaireTitle)
+                    $('#title').html(restData.questionnaireTitle);
+                    $('.release-time-info').html(restData.questionnaireReleaseTime);
                     var html='';
                     for (var i = 0; i < titleLength; i++) {
                         var html='';
@@ -181,8 +200,6 @@
     }
 
     function submitQuestionnaire(data) {
-        // TODO
-        console.log(data);
         common.ajaxSend(
             '/student/submitQuestionnaire',
             data,
@@ -196,6 +213,56 @@
             }
         )
 
+    }
+
+
+    function loadSubmitData(data) {
+        common.ajaxSend(
+            '/student/loadSubmitData',
+            data,
+            function (e) {
+                if(e.code==1) {
+                    var restData = e.data;
+                    var titleLength = restData.questionnaireContextTitles.length;
+                    var contextLength = restData.submitContexts.length;
+                    var index = 0;
+                    $('#title').html(restData.questionnaireTitle);
+                    $('.release-time-info').html(restData.questionnaireReleaseTime);
+                    var html = '';
+                    for (var i = 0; i < titleLength; i++) {
+                        var html = '';
+                        html += '<ul class="data">' +
+                            '                        <li class="title-tag" title-id="' + restData.questionnaireContextTitles[i].id + '">' +
+                            '                            ' + (i + 1) + '、' + restData.questionnaireContextTitles[i].questionnaireTitle + '' +
+                            '                        </li>';
+                        for (var j = 0; j < contextLength / titleLength; j++) {
+                            if(restData.submitContexts[index].submitState==1){
+                                // 选中
+                                html += '                        <li>' +
+                                    '                            <input id="' + restData.submitContexts[index].id + '" class="chat-button-location-radio-input" type="checkbox" checked disabled="disabled" name="checkbox" value="1" />' +
+                                    '                            <label  for="' + restData.submitContexts[index].id + '"></label >' +
+                                    '                            ' + restData.submitContexts[index].context + '' +
+                                    '                        </li>';
+                            }else{
+                                // 不选中
+                                html += '                        <li>' +
+                                    '                            <input id="' + restData.submitContexts[index].id + '" class="chat-button-location-radio-input" type="checkbox" disabled="disabled" name="checkbox" value="1" />' +
+                                    '                            <label  for="' + restData.submitContexts[index].id + '"></label >' +
+                                    '                            ' + restData.submitContexts[index].context + '' +
+                                    '                        </li>';
+                            }
+
+                            index++;
+                        }
+                        html += '                    </ul>'
+                        $('.list-context-info').append(html);
+                    }
+                }
+            },
+            function () {
+
+            }
+        )
     }
 
 

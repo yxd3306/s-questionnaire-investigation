@@ -45,6 +45,11 @@ public class StudentDBApi {
     public JSONObject submitQuestionnaire(HttpServletRequest request){
         return studentService.submitQuestionnaire(request);
     }
+    @RequestMapping("/loadSubmitData")
+    @ResponseBody
+    public JSONObject loadSubmitData(HttpServletRequest request){
+        return studentService.loadSubmitData(request);
+    }
 
 
 
