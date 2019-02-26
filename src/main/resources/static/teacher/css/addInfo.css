@@ -275,4 +275,11 @@ button{
     outline: none;
 }
 
+.add-body .add-title .release-time{
+    float: right;
+    font-size: 16px;
+    margin-right: 50px;
+    color: #c5bebe;
+}
+
 

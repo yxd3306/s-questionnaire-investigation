@@ -115,3 +115,13 @@ input[type=checkbox] {
 table tbody tr td *,ul li *{
     vertical-align: middle;
 }
+.hide-mode{
+    display: none;
+}
+
+.info-body .info-list .info-list-title .release-time{
+    float: right;
+    font-size: 16px;
+    margin-right: 50px;
+    color: #c5bebe;
+}

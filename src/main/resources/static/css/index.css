@@ -294,7 +294,7 @@ caption {
     color: #F2CC1B;
 }
 .draft{
-    color: #dcb8b8;
+    color: #505dcb;
 }
 
 .wait {
@@ -385,4 +385,11 @@ input[type=checkbox]{
 
 .foucs-td{
     background: #d5ddce;
+}
+
+.back{
+    background-color: #ff5252;
+}
+.over{
+    color:#a6a3a3;
 }

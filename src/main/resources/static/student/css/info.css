@@ -145,3 +145,7 @@ input[type=checkbox] {
 table tbody tr td *,ul li *{
     vertical-align: middle;
 }
+
+.over{
+    color: #a6a3a3;
+}

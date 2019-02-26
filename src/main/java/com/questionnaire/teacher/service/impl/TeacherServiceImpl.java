@@ -210,6 +210,11 @@ public class TeacherServiceImpl implements TeacherService {
                     restQuestionnaireObject.setQuestionnaireState(questionnaire.getState());
                     restQuestionnaireObject.setQuestionnaireContextTitles(questionnaireContextTitles);
                     restQuestionnaireObject.setQuestionnaireContexts(r_questionnaireContexts);
+                    try {
+                        restQuestionnaireObject.setQuestionnaireCreateTime(DateUtil.dateFormat(questionnaire.getCreateTime(),DateUtil.HOUR_PATTERN));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     restQuestionnaireObjects.add(restQuestionnaireObject);
 
                     jsonObject.put("code", 1);
@@ -442,7 +447,10 @@ public class TeacherServiceImpl implements TeacherService {
                 questionnaire.setReleaseTime(new Date());
                 questionnaire.setState(2);
                 restId += questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
+
             }
+            System.out.println("restId"+restId);
+            System.out.println("ids"+ids);
         } finally {
             if (restId > 0) {
                 jsonObject.put("code", 1);
@@ -561,6 +569,34 @@ public class TeacherServiceImpl implements TeacherService {
         }
 
 
+        return jsonObject;
+    }
+
+    @Transactional
+    @Override
+    public JSONObject backQuestionnaireById(HttpServletRequest request) {
+        TreeMap<String, String> allRequestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+        Integer id = Integer.parseInt(allRequestParam.get("questionnaireId"));
+        if(null!=id&&id>0){
+            Questionnaire questionnaire = new Questionnaire();
+            questionnaire.setId(id);
+            questionnaire.setState(4);
+            int i = questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
+            if(i>0){
+                jsonObject.put("code", 1);
+                jsonObject.put("msg", "收回成功");
+                jsonObject.put("data", "");
+            }else{
+                jsonObject.put("code", 0);
+                jsonObject.put("msg", "收回失败");
+                jsonObject.put("data", "");
+            }
+        }else{
+            jsonObject.put("code", 0);
+            jsonObject.put("msg", "收回失败");
+            jsonObject.put("data", "");
+        }
         return jsonObject;
     }
 }

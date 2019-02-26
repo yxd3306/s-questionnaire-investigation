@@ -79,6 +79,11 @@ public class DBApi {
     public JSONObject selectQuestionnaireBySearch(HttpServletRequest request){
         return teacherService.selectQuestionnaireBySearch(request);
     }
+    @RequestMapping(value = "/teacher/backQuestionnaireById",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject backQuestionnaireById(HttpServletRequest request){
+        return teacherService.backQuestionnaireById(request);
+    }
 
 
 

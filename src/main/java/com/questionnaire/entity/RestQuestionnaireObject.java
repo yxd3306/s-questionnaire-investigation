@@ -28,6 +28,7 @@ public class RestQuestionnaireObject {
 
     private List<Questionnaire> questionnaires;
     private List<TeacherQuestionnaireStudent> teacherQuestionnaireStudents;
+    private List<RestSubmitContext> submitContexts;
 
 
     public Integer getQuestionnaireId() {
@@ -124,5 +125,13 @@ public class RestQuestionnaireObject {
 
     public void setTeacherQuestionnaireStudents(List<TeacherQuestionnaireStudent> teacherQuestionnaireStudents) {
         this.teacherQuestionnaireStudents = teacherQuestionnaireStudents;
+    }
+
+    public List<RestSubmitContext> getSubmitContexts() {
+        return submitContexts;
+    }
+
+    public void setSubmitContexts(List<RestSubmitContext> submitContexts) {
+        this.submitContexts = submitContexts;
     }
 }

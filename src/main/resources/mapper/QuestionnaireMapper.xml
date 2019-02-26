@@ -130,32 +130,28 @@
         <include refid="Base_Column_List" />
         from
         t_questionnaire
-        where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 order by id desc
+        where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 order by create_time desc
     </select>
     <select id="selectQuestionnaireByState" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
         select
         <include refid="Base_Column_List" />
         from
         t_questionnaire
-        where teacher_id=#{teacherId,jdbcType=INTEGER} and state=#{state,jdbcType=INTEGER} order by id desc
+        where teacher_id=#{teacherId,jdbcType=INTEGER} and state=#{state,jdbcType=INTEGER} order by create_time desc
     </select>
     <select id="selectQuestionnaireBySearch" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
         select
         <include refid="Base_Column_List" />
         from
         t_questionnaire
-        where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 and title like '%${title}%' order by id desc
+        where teacher_id=#{teacherId,jdbcType=INTEGER} and state!=-1 and title like '%${title}%' order by create_time desc
     </select>
     <select id="selectByPrimaryKeys" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
         select
         <include refid="Base_Column_List" />
         from
         t_questionnaire
-        where id in
-        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        and (state=2 or state=3 or state=4) order by id desc
+        where (state=2 or state=3 or state=4) order by release_time desc
     </select>
 
     <select id="selectByPrimaryKeysForStatte" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
@@ -163,11 +159,7 @@
         <include refid="Base_Column_List" />
         from
         t_questionnaire
-        where id in
-        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        and state=#{state,jdbcType=INTEGER} order by id desc
+        where state=#{state,jdbcType=INTEGER} order by release_time desc
     </select>
     <select id="selectByPrimaryKeyAndState" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
         select
@@ -192,11 +184,7 @@
         count(id)
         from
         t_questionnaire
-        where id in
-        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        and (state=2 or state=3 or state=4)
+        where (state=2 or state=3 or state=4)
     </select>
 
     <select id="countByKeyByForStatte" resultType="java.lang.Integer" parameterType="java.lang.Integer" >
@@ -204,11 +192,7 @@
         count(id)
         from
         t_questionnaire
-        where id in
-        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
-            #{id}
-        </foreach>
-        and state = #{state,jdbcType=INTEGER}
+        where state = #{state,jdbcType=INTEGER}
     </select>
 
     <insert id="insertRest" parameterType="com.questionnaire.entity.Questionnaire" >

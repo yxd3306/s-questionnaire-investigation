@@ -87,6 +87,11 @@
             data,
             function (e) {
                 if (e.code == 1) {
+                    if(judgePath.test(path)){
+                        $('.add-title').append('<br/>' +
+                            '                    ' +
+                            '            <span class="release-time">创建时间:<span class="release-time-info">'+e.data.questionnaireCreateTime+'</span></span>')
+                    }
                     $('#title').html(e.data.questionnaireTitle)
                     if (judgePath.test(path)) {
                         console.log()
