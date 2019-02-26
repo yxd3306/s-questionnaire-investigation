@@ -55,10 +55,6 @@
         <caption>
             <select id="select-list">
             </select>
-            <button class="delete-button">
-                <img src="../../static/student/img/delete.png">
-                删除
-            </button>
         </caption>
         <thead>
         <tr>
@@ -171,8 +167,6 @@
                         html += '<td>' + v.questionnaireReleaseTime + '</td>' +
                             '                <td>' +
                             '                    <button class="query" onClick="doSomething(' + v.questionnaireId + ','+v.questionnaireState+',this)">查看</button>' +
-                            '                    |' +
-                            '                    <button class="delete"onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
                             '                </td>' +
                             ' </tr>';
                         $('.s-data-list').append(html);
@@ -281,8 +275,6 @@
                         html += '<td>' + v.questionnaireReleaseTime + '</td>' +
                             '                <td>' +
                             '                    <button class="query" onClick="doSomething(' + v.questionnaireId + ','+v.questionnaireState+',this)">查看</button>' +
-                            '                    |' +
-                            '                    <button class="delete"onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
                             '                </td>' +
                             ' </tr>';
                         $('.s-data-list').append(html);
@@ -308,28 +300,6 @@
         if (type == "查看") {
             common.setCookie('state',state,7);
             window.location.href = '/student/queryQuestionnaireById/' + id + '';
-        } else if (type == "删除") {
-            common.ajaxSend(
-                "/teacher/deleteQuestionnaireById",
-                data,
-                function (e) {
-                    if(e.code==1){
-                        var data = {
-                            id: common.getCookie("teacherUserId"),
-                            currentPage: releaseIndex,
-                            pageSize: pageSize
-                        }
-                        initData(data);
-                    }
-                    // if ($(obj).parent().parent().siblings().length == 0){
-                    //
-                    // } else
-                    //     $(obj).parent().parent().remove();
-                },
-                function (e) {
-
-                }
-            )
         }
 
     }
@@ -393,8 +363,6 @@
                         html += '<td>' + v.questionnaireReleaseTime + '</td>' +
                             '                <td>' +
                             '                    <button class="query" onClick="doSomething(' + v.questionnaireId + ','+v.questionnaireState+',this)">查看</button>' +
-                            '                    |' +
-                            '                    <button class="delete"onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
                             '                </td>' +
                             ' </tr>';
                         $('.s-data-list').append(html);
@@ -438,8 +406,6 @@
                         html += '<td>' + v.questionnaireReleaseTime + '</td>' +
                             '                <td>' +
                             '                    <button class="query" onClick="doSomething(' + v.questionnaireId + ','+v.questionnaireState+',this)">查看</button>' +
-                            '                    |' +
-                            '                    <button class="delete"onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
                             '                </td>' +
                             ' </tr>';
                         $('.s-data-list').append(html);

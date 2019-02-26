@@ -357,9 +357,9 @@
                                     '<td class="td">' +
                                     '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             } else if (v.questionnaireState == 1) {
@@ -378,9 +378,9 @@
                                     '<td class="td">' +
                                     '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             } else if (v.questionnaireState == 2) {
@@ -399,9 +399,9 @@
                                     '<td class="td">' +
                                     '<button class="update prohibit">修改</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             } else if(v.questionnaireState==4){
@@ -419,9 +419,9 @@
                                     '<td class="td">' +
                                     '<button class="update prohibit">修改</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             }
@@ -461,7 +461,7 @@
     }
 
     // 修改、查看、删除按钮事件
-    function doSomething(id, obj) {
+    function doSomething(id,state, obj) {
 
         var type = $(obj).text();
         var data = {
@@ -470,7 +470,12 @@
         if (type == "修改") {
             window.location.href = '/teacher/updateQuestionnaireById/' + id + '';
         } else if (type == "查看") {
-            window.location.href = '/teacher/queryQuestionnaireById/' + id + '';
+            if(state==1||state==2)
+                window.location.href = '/teacher/queryQuestionnaireById/' + id + '';
+            else if(state==3)
+                window.location.href = '/teacher/queryQuestionnaireById/' + id + '';
+            else if(state==4)
+                window.location.href = '/teacher/queryQuestionnaireById/' + id + '';
         } else if (type == "删除") {
             common.ajaxSend(
                 "/teacher/deleteQuestionnaireById",
@@ -577,9 +582,9 @@
                                 '<td class="td">' +
                                 '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
                                 '|' +
-                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                 '</td>' +
                                 '</tr>'
                         } else if (v.questionnaireState == 1) {
@@ -597,9 +602,9 @@
                                 '<td class="td">' +
                                 '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
                                 '|' +
-                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                 '</td>' +
                                 '</tr>'
                         } else if (v.questionnaireState == 2) {
@@ -617,9 +622,9 @@
                                 '<td class="td">' +
                                 '<button class="update prohibit">修改</button>' +
                                 '|' +
-                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                 '</td>' +
                                 '</tr>'
                         } else if(v.questionnaireState==4){
@@ -637,9 +642,9 @@
                                 '<td class="td">' +
                                 '<button class="update prohibit">修改</button>' +
                                 '|' +
-                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                 '</td>' +
                                 '</tr>'
                         }
@@ -774,9 +779,9 @@
                                     '<td class="td">' +
                                     '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             } else if (v.questionnaireState == 1) {
@@ -794,9 +799,9 @@
                                     '<td class="td">' +
                                     '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             } else if (v.questionnaireState == 2) {
@@ -814,9 +819,9 @@
                                     '<td class="td">' +
                                     '<button class="update prohibit">修改</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             } else if(v.questionnaireState==4){
@@ -834,9 +839,9 @@
                                     '<td class="td">' +
                                     '<button class="update prohibit">修改</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             }
@@ -935,9 +940,9 @@
                                     '<td class="td">' +
                                     '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             } else if (v.questionnaireState == 1) {
@@ -956,9 +961,9 @@
                                     '<td class="td">' +
                                     '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             } else if (v.questionnaireState == 2) {
@@ -977,9 +982,9 @@
                                     '<td class="td">' +
                                     '<button class="update prohibit">修改</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             } else if(v.questionnaireState==4){
@@ -997,9 +1002,9 @@
                                     '<td class="td">' +
                                     '<button class="update prohibit">修改</button>' +
                                     '|' +
-                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                    '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
-                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                    '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                     '</td>' +
                                     '</tr>'
                             }
@@ -1046,9 +1051,9 @@
                                 '<td class="td">' +
                                 '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
                                 '|' +
-                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                 '</td>' +
                                 '</tr>'
                         } else if (v.questionnaireState == 1) {
@@ -1066,9 +1071,9 @@
                                 '<td class="td">' +
                                 '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
                                 '|' +
-                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
+                                '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                 '</td>' +
                                 '</tr>'
                         } else if (v.questionnaireState == 2) {
@@ -1088,7 +1093,7 @@
                                 '|' +
                                 '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
                                 '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                 '</td>' +
                                 '</tr>'
                         } else if(v.questionnaireState==4){
@@ -1108,7 +1113,7 @@
                                 '|' +
                                 '<button class="query" onClick="doSomething(' + v.questionnaireId + ',this)">查看</button>' +
                                 '|' +
-                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',this)">删除</button>' +
+                                '<button class="delete" onClick="doSomething(' + v.questionnaireId + ',null,this)">删除</button>' +
                                 '</td>' +
                                 '</tr>'
                         }
