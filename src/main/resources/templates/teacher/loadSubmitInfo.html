@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>问卷网-提交问卷</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../../static/student/css/queryInfo.css">
+    <link rel="stylesheet" href="../../../static/teacher/css/addInfo.css">
+    <script src="../../../static/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../../../static/js/common.js"></script>
+
+    <link rel="stylesheet" href="../../../static/css/jquery-ui.min.css">
+    <script src="//apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+
+</head>
+<body>
+
+<nav class="top-bar">
+    <div class="top-bar-logo">
+        <a href="/teacher/index.html">
+            <img class="top-bar-logo-img" src="../../../static/teacher/img/logo_dog.jpg">
+        </a>
+    </div>
+    <div class="head-nav ">
+        <a href="/teacher/index.html">
+            <img src="../../../static/teacher/img/my.png">
+            <span>我的问卷</span>
+        </a>
+        &nbsp;
+        <a href="javascript:void(0)">
+            <span>|</span>
+        </a>
+        &nbsp;
+        <a>
+            <img src="../../../static/teacher/img/user.png">
+            <span id="userInfo">userInfo</span>
+        </a>
+        &nbsp;
+        <a>
+
+            <img src="../../../static/teacher/img/remind.png">
+            <span>消息</span>
+        </a>
+        &nbsp;
+        <a href="/teacher/login.html">
+            <img src="../../../static/teacher/img/out.png">
+            <span>退出</span>
+        </a>
+    </div>
+</nav>
+
+<nav class="info-body">
+    <div class="info-list">
+        <div class="info-list-title">
+            <span class="title" id="title"></span>
+            <br/>
+            <span class="release-time">发布时间:<span class="release-time-info"></span></span>
+            <div class="info-list-context">
+                <div class="list-context-info">
+                    
+                </div>
+            </div>
+            <button class="list-context-submit hide-mode">
+                提交
+            </button>
+            <div class="clear"></div>
+        </div>
+    </div>
+
+
+</nav>
+
+</body>
+<script type="text/javascript">
+    
+    $(function () {
+        initData();
+    })
+    
+    function initData() {
+        var userName = common.getCookie('teacherUserName');
+        $('#userInfo').html(userName);
+        var path=window.location.pathname;
+        var studentId=path.split("/")[3];
+        var questionnaireId=path.split("/")[4];
+        var data={
+            studentId:studentId,
+            questionnaireId:questionnaireId
+        }
+        common.ajaxSend(
+            '/teacher/loadSubmitData',
+            data,
+            function (e) {
+                if(e.code==1) {
+                    var restData = e.data;
+                    var titleLength = restData.questionnaireContextTitles.length;
+                    var contextLength = restData.submitContexts.length;
+                    var index = 0;
+                    $('#title').html(restData.questionnaireTitle);
+                    $('.release-time-info').html(restData.questionnaireReleaseTime);
+                    var html = '';
+                    for (var i = 0; i < titleLength; i++) {
+                        var html = '';
+                        html += '<ul class="data">' +
+                            '                        <li class="title-tag" title-id="' + restData.questionnaireContextTitles[i].id + '">' +
+                            '                            ' + (i + 1) + '、' + restData.questionnaireContextTitles[i].questionnaireTitle + '' +
+                            '                        </li>';
+                        for (var j = 0; j < contextLength / titleLength; j++) {
+                            if(restData.submitContexts[index].submitState==1){
+                                // 选中
+                                html += '                        <li>' +
+                                    '                            <input id="' + restData.submitContexts[index].id + '" class="chat-button-location-radio-input" type="checkbox" checked disabled="disabled" name="checkbox" value="1" />' +
+                                    '                            <label  for="' + restData.submitContexts[index].id + '"></label >' +
+                                    '                            ' + restData.submitContexts[index].context + '' +
+                                    '                        </li>';
+                            }else{
+                                // 不选中
+                                html += '                        <li>' +
+                                    '                            <input id="' + restData.submitContexts[index].id + '" class="chat-button-location-radio-input" type="checkbox" disabled="disabled" name="checkbox" value="1" />' +
+                                    '                            <label  for="' + restData.submitContexts[index].id + '"></label >' +
+                                    '                            ' + restData.submitContexts[index].context + '' +
+                                    '                        </li>';
+                            }
+
+                            index++;
+                        }
+                        html += '                    </ul>'
+                        $('.list-context-info').append(html);
+                    }
+                }
+            },
+            function () {
+
+            }
+        )
+    }
+    
+    
+</script>
+</html>

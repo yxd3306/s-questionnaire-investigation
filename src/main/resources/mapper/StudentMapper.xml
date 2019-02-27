@@ -111,4 +111,16 @@
         from t_student
         where username = #{username} and password=#{password} and state=1
     </select>
+    <select id="selectByUserNameAndNameAndEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List" />
+        from t_student
+        where username = #{username} and name=#{name} and email = #{email,jdbcType=VARCHAR} and state=1
+    </select>
+    <select id="selectByUserName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from t_student
+        where username = #{username}
+    </select>
 </mapper>

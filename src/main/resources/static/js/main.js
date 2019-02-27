@@ -37,7 +37,37 @@
         }else if(teacher.test(path))
             teacherLogin(data);
     });
+
+
     $('#toRegister').on('click',function(){
+        for(var i=0; i<input.length; i++) {
+            if(validate(input[i]) == false){
+                showValidate(input[i]);
+                return ;
+            }
+        }
+
+        if($('#password2').val()!=$('#password').val()){
+            alert('两次输入的密码不一致')
+            return;
+        }else{
+            var data={
+                username:$('#username').val(),
+                password:$('#password').val(),
+                name:$('#name').val(),
+                email:$('#email').val(),
+            };
+            var path = ""+window.location.pathname
+            var student = RegExp(/student/);
+            var teacher = RegExp(/teacher/);
+            if(student.test(path)){
+                studentRegister(data);
+            }else if(teacher.test(path))
+                teacherRegister(data);
+        }
+    });
+
+    $('#toForgot').on('click',function(){
         for(var i=0; i<input.length; i++) {
             if(validate(input[i]) == false){
                 showValidate(input[i]);
@@ -54,10 +84,10 @@
         var student = RegExp(/student/);
         var teacher = RegExp(/teacher/);
         if(student.test(path)){
-            studentRegister(data);
+            studentForgot(data);
         }else if(teacher.test(path))
-            teacherRegister(data);
-    });
+            teacherForgot(data);
+    })
 
 
     $('.validate-form .input100').each(function(){
@@ -140,11 +170,9 @@
             data,
             function (e) {
                 if(e.code==0){
-                    alert(e.msg)
                 }
                 else{
                     window.history.go(-1);
-                    alert(e.msg)
                 }
 
             },
@@ -156,6 +184,42 @@
     function teacherRegister(data) {
         common.ajaxSend(
             "/teacher/register",
+            data,
+            function (e) {
+                if(e.code==0){
+                }
+                else{
+                    window.history.go(-1);
+                }
+
+            },
+            function (e) {
+
+            }
+        );
+    }
+
+    function studentForgot(data) {
+        common.ajaxSend(
+            "/student/forgot",
+            data,
+            function (e) {
+                if(e.code==0){
+                    alert(e.msg)
+                }
+                else{
+                    window.history.go(-1);
+                }
+
+            },
+            function (e) {
+
+            }
+        );
+    }
+    function teacherForgot(data) {
+        common.ajaxSend(
+            "/teacher/forgot",
             data,
             function (e) {
                 if(e.code==0){

@@ -18,5 +18,7 @@ public interface SubmitQuestionnaireMapper {
 
     int updateByPrimaryKey(SubmitQuestionnaire record);
 
-    List<SubmitQuestionnaire> selectByQuestionnaireIdAndStudentId(@Param("questionnaireId") Integer questionnaireId, @Param("studentId") int studentId);
+    List<SubmitQuestionnaire> selectQuestionnaireByStudentId(@Param("studentId") Integer studentId);
+
+    List<SubmitQuestionnaire> selectSubmitDataById(@Param("questionnaireId") Integer questionnaireId);
 }

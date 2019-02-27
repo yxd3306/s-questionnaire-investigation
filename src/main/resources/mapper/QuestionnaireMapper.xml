@@ -159,7 +159,15 @@
         <include refid="Base_Column_List" />
         from
         t_questionnaire
-        where state=#{state,jdbcType=INTEGER} order by release_time desc
+        where
+        <if test="state==2">
+            (state =2)
+        </if>
+        <if test="state==3 or state==4">
+            state=#{state,jdbcType=INTEGER}
+        </if>
+        order by release_time desc
+
     </select>
     <select id="selectByPrimaryKeyAndState" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
         select
@@ -168,6 +176,13 @@
         t_questionnaire
         where id =#{id,jdbcType=INTEGER}
         and state=#{state,jdbcType=INTEGER}
+    </select>
+    <select id="loadSubmitData" resultMap="BaseResultMap" parameterType="com.github.pagehelper.Page" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        t_questionnaire
+        where id =#{id,jdbcType=INTEGER}
     </select>
 
 

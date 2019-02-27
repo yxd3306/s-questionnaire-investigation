@@ -59,6 +59,36 @@
 	<script src="../static/vendor/jquery/jquery-3.3.1.min.js"></script>
 	<script src="../static/js/main.js"></script>
 	<script src="../static/js/common.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			$('#username').blur(function () {
+			    var userName=$(this).val();
+
+			    if(userName!=undefined&&userName!=''){
+                    var data={
+						userName:userName
+					}
+			        common.ajaxSend(
+			            '/teacher/selectTeacherByUserName',
+                        data,
+						function (e) {
+							if(e.code==0){
+                                alert("该用户名已被注册")
+							}
+                        },
+						function () {
+
+                        }
+					)
+				}
+            })
+            $('#password2').blur(function () {
+                if($('#password2').val()!=$('#password').val()){
+                    alert('两次输入的密码不一致')
+                }
+            })
+        })
+	</script>
 </body>
 
 </html>

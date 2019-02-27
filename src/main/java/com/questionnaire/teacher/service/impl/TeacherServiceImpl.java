@@ -6,14 +6,10 @@ import com.github.pagehelper.PageHelper;
 import com.questionnaire.common.page.PageBean;
 import com.questionnaire.common.util.BaseUtil;
 import com.questionnaire.common.util.DateUtil;
-import com.questionnaire.dao.QuestionnaireContextMapper;
-import com.questionnaire.dao.QuestionnaireContextTitleMapper;
-import com.questionnaire.dao.QuestionnaireMapper;
-import com.questionnaire.dao.QuestionnaireTypeMapper;
-import com.questionnaire.entity.Questionnaire;
-import com.questionnaire.entity.QuestionnaireContext;
-import com.questionnaire.entity.QuestionnaireContextTitle;
-import com.questionnaire.entity.RestQuestionnaireObject;
+import com.questionnaire.dao.*;
+import com.questionnaire.entity.*;
+import com.questionnaire.student.dao.StudentMapper;
+import com.questionnaire.student.entity.Student;
 import com.questionnaire.teacher.dao.TeacherMapper;
 import com.questionnaire.teacher.entity.Teacher;
 import com.questionnaire.teacher.service.TeacherService;
@@ -48,6 +44,12 @@ public class TeacherServiceImpl implements TeacherService {
     QuestionnaireTypeMapper questionnaireTypeMapper;
     @Autowired
     QuestionnaireContextTitleMapper questionnaireContextTitleMapper;
+    @Autowired
+    SubmitQuestionnaireMapper submitQuestionnaireMapper;
+    @Autowired
+    StudentMapper studentMapper;
+    @Autowired
+    SubmitContextMapper submitContextMapper;
 
     // 登录
     @Override
@@ -596,6 +598,160 @@ public class TeacherServiceImpl implements TeacherService {
             jsonObject.put("code", 0);
             jsonObject.put("msg", "收回失败");
             jsonObject.put("data", "");
+        }
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject selectSubmitDataById(HttpServletRequest request) {
+        TreeMap<String, String> allRequestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+        Integer questionnaireId=Integer.parseInt(allRequestParam.get("id"));
+        if(null!=questionnaireId&&questionnaireId>0){
+            ArrayList<RestSubmitQuestionnaire> restSubmitQuestionnaires = new ArrayList<>();
+            List<SubmitQuestionnaire> submitQuestionnaires = submitQuestionnaireMapper.selectSubmitDataById(questionnaireId);
+            if(null!=submitQuestionnaires&&submitQuestionnaires.size()>0){
+                for (SubmitQuestionnaire submitQuestionnaire : submitQuestionnaires) {
+                    Student student = studentMapper.selectByPrimaryKey(submitQuestionnaire.getStudentId());
+                    if(null!=student){
+                        RestSubmitQuestionnaire restSubmitQuestionnaire = new RestSubmitQuestionnaire();
+                        restSubmitQuestionnaire.setStudentName(student.getName());
+                        restSubmitQuestionnaire.setStudentId(student.getId());
+                        restSubmitQuestionnaire.setQuestionnaireId(submitQuestionnaire.getQuestionnaireId());
+                        try {
+                            restSubmitQuestionnaire.setSubmitTime(DateUtil.dateFormat(submitQuestionnaire.getSubmitTime(),DateUtil.HOUR_PATTERN));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        restSubmitQuestionnaires.add(restSubmitQuestionnaire);
+                    }
+                }
+            }
+            jsonObject.put("code", 1);
+            jsonObject.put("msg", "ok");
+            jsonObject.put("data", restSubmitQuestionnaires);
+        }else{
+            jsonObject.put("code", 0);
+            jsonObject.put("msg", "err");
+        }
+
+
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject loadSubmitData(HttpServletRequest request) {
+        TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+        int questionnaireId = Integer.parseInt(requestParam.get("questionnaireId"));
+        int studentId = Integer.parseInt(requestParam.get("studentId"));
+        if(questionnaireId>0
+                &&studentId>0){
+            Questionnaire questionnaire = questionnaireMapper.loadSubmitData(questionnaireId);
+            List<RestSubmitContext> restSubmitContexts = new ArrayList<>();
+            if (null != questionnaire) {
+                RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
+                restQuestionnaireObject.setQuestionnaireId(questionnaire.getId());
+                restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
+                try {
+                    restQuestionnaireObject.setQuestionnaireReleaseTime(DateUtil.dateFormat(questionnaire.getReleaseTime(), DateUtil.HOUR_PATTERN));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                List<QuestionnaireContextTitle> questionnaireContextTitles = questionnaireContextTitleMapper.selectQuestionnaireContextTitles(questionnaire.getId());
+                restQuestionnaireObject.setQuestionnaireContextTitles(questionnaireContextTitles);
+                for (QuestionnaireContextTitle questionnaireContextTitle : questionnaireContextTitles) {
+
+                    List<QuestionnaireContext> questionnaireContexts = questionnaireContextMapper.selectQuestionnaireContexts(questionnaireContextTitle.getId());
+                    List<SubmitContext> submitContexts = submitContextMapper.selectByQuestionnaireIdAndStudentId(questionnaire.getId(),studentId);
+                    for (int i = 0; i < questionnaireContexts.size(); i++) {
+                        if(i<submitContexts.size()){
+                            if(questionnaireContexts.get(i).getId().equals(submitContexts.get(i).getQuestionnaireContextId())){
+                                RestSubmitContext restSubmitContext = new RestSubmitContext();
+                                restSubmitContext.setContextId(questionnaireContexts.get(i).getId());
+                                restSubmitContext.setContext(questionnaireContexts.get(i).getContext());
+                                restSubmitContext.setContextState(questionnaireContexts.get(i).getState());
+                                restSubmitContext.setQuestionnaireContextTitleId(questionnaireContexts.get(i).getQuestionnaireContextTitleId());
+                                restSubmitContext.setQuestionnaireId(questionnaireId);
+                                restSubmitContext.setSubmitState(submitContexts.get(i).getSubmitState());
+                                restSubmitContext.setStudentId(submitContexts.get(i).getStudentId());
+                                restSubmitContexts.add(restSubmitContext);
+                            }
+                        }else{
+                            RestSubmitContext restSubmitContext = new RestSubmitContext();
+                            restSubmitContext.setContextId(questionnaireContexts.get(i).getId());
+                            restSubmitContext.setContext(questionnaireContexts.get(i).getContext());
+                            restSubmitContext.setContextState(questionnaireContexts.get(i).getState());
+                            restSubmitContext.setQuestionnaireContextTitleId(questionnaireContexts.get(i).getQuestionnaireContextTitleId());
+                            restSubmitContext.setQuestionnaireId(questionnaireId);
+                            restSubmitContext.setSubmitState(-1);
+                            restSubmitContexts.add(restSubmitContext);
+                        }
+                    }
+
+                }
+                restQuestionnaireObject.setSubmitContexts(restSubmitContexts);
+
+
+                jsonObject.put("code", 1);
+                jsonObject.put("msg", "返回成功");
+                jsonObject.put("data", restQuestionnaireObject);
+            }
+        }
+
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject selectTeacherByUserName(HttpServletRequest request) {
+        TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+        String userName = requestParam.get("userName");
+        if(userName.isEmpty()&&null==userName){
+            jsonObject.put("code", 0);
+            jsonObject.put("msg", "注册异常");
+            jsonObject.put("data", "");
+        }else {
+            Teacher teacher = teacherMapper.selectByUserName(userName);
+            if (teacher != null) {
+                jsonObject.put("code", 0);
+                jsonObject.put("msg", "注册异常");
+                jsonObject.put("data", "");
+            } else {
+                jsonObject.put("code", 1);
+                jsonObject.put("msg", "");
+                jsonObject.put("data", "");
+            }
+        }
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject forgot(HttpServletRequest request) {
+        TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+        String username = requestParam.get("username");
+        String name = requestParam.get("name");
+        String email = requestParam.get("email");
+        String md5Pass = DigestUtils.md5DigestAsHex(requestParam.get("password").getBytes());
+        Teacher teacher = teacherMapper.selectByUserNameAndNameAndEmail(username,name,email);
+        jsonObject.put("code", 0);
+        jsonObject.put("msg", "修改失败");
+        jsonObject.put("data", "");
+        if(null!=teacher){
+            Teacher teacher1 = new Teacher();
+            teacher1.setId(teacher.getId());
+            teacher1.setUsername(username);
+            teacher1.setName(name);
+            teacher1.setPassword(md5Pass);
+            teacher1.setEmail(email);
+            int i = teacherMapper.updateByPrimaryKeySelective(teacher);
+            if(i>0){
+                jsonObject.put("code", 1);
+                jsonObject.put("msg", "修改成功");
+                jsonObject.put("data", "");
+            }
         }
         return jsonObject;
     }

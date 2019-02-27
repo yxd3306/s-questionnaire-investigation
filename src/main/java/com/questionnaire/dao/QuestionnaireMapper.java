@@ -56,4 +56,6 @@ public interface QuestionnaireMapper {
 
 
     Questionnaire selectByPrimaryKeyAndState(@Param("id") Integer id, @Param("state") Integer state);
+
+    Questionnaire loadSubmitData(@Param("id") Integer id);
 }

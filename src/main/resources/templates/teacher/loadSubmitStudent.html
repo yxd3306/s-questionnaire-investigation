@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>问卷网-收回数据</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../static/teacher/css/load.css">
+    <link rel="stylesheet" href="../../static/css/index.css">
+    <script src="../../static/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="../../static/js/common.js"></script>
+
+
+</head>
+<body>
+
+<nav class="top-bar">
+    <div class="top-bar-logo">
+        <a href="/teacher/index.html">
+            <img class="top-bar-logo-img" src="../../static/teacher/img/logo_dog.jpg">
+        </a>
+    </div>
+    <div class="head-nav ">
+        <a href="/teacher/index.html">
+            <img src="../../static/teacher/img/my.png">
+            <span>我的问卷</span>
+        </a>
+        &nbsp;
+        <a href="javascript:void(0)">
+            <span>|</span>
+        </a>
+        &nbsp;
+        <a>
+            <img src="../../static/teacher/img/user.png">
+            <span id="userInfo">userInfo</span>
+        </a>
+        &nbsp;
+        <a>
+
+            <img src="../../static/teacher/img/remind.png">
+            <span>消息</span>
+        </a>
+        &nbsp;
+        <a href="/teacher/login.html">
+            <img src="../../static/teacher/img/out.png">
+            <span>退出</span>
+        </a>
+    </div>
+</nav>
+<nav class="load-body">
+    <div class="load-body-info">
+        <div class="submit-num">
+            <span class="left">成员总数</span><span class="right"></span>
+            <div class="clear"></div>
+        </div>
+    </div>
+
+</nav>
+
+</body>
+<script type="text/javascript">
+
+    $(function () {
+        initData();
+    })
+
+
+
+    function initData() {
+        var userName=common.getCookie("teacherUserName");
+        $('#userInfo').html(userName);
+        var path=window.location.pathname;
+        var data={
+            id: path.split("/")[3]
+        }
+        selectSubmitDataById(data);
+
+        buttonClick();
+
+    }
+    
+    function selectSubmitDataById(data) {
+        common.ajaxSend(
+            '/teacher/selectSubmitDataById',
+            data,
+            function (e) {
+                if(e.code==1){
+                    $('.right').html(e.data.length+"人");
+                    var html='';
+                    $.each(e.data,function (i,v) {
+                        html='<div class="student-list">' +
+                            '            <span class="student-name" student-id="'+v.studentId+'" questionnaire-id="'+v.questionnaireId+'">'+v.studentName+'</span>' +
+                            '            <br/>' +
+                            '            <span class="submit-time">'+v.submitTime+'</span>' +
+                            '        </div>'
+                        $('.load-body-info').append(html);
+                    })
+                }
+            },
+            function () {
+                
+            }
+        )
+    }
+
+    function buttonClick() {
+        $('.load-body').on('click','.student-name',function () {
+            var studentId=$(this).attr('student-id');
+            var questionnaireId=$(this).attr('questionnaire-id');
+            window.location.href='/teacher/loadSubmitInfo/'+studentId+'/'+questionnaireId+'';
+        })
+    }
+
+
+
+
+
+</script>
+</html>

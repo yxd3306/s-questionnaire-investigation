@@ -1,15 +1,15 @@
 package com.questionnaire.entity;
 
+import java.util.Date;
+
 public class SubmitQuestionnaire {
     private Integer id;
 
-    private Integer questionnaireId;
-
     private Integer studentId;
 
-    private Integer questionnaireTitleId;
+    private Integer questionnaireId;
 
-    private Integer questionnaireContextId;
+    private Date submitTime;
 
     private Integer submitState;
 
@@ -21,14 +21,6 @@ public class SubmitQuestionnaire {
         this.id = id;
     }
 
-    public Integer getQuestionnaireId() {
-        return questionnaireId;
-    }
-
-    public void setQuestionnaireId(Integer questionnaireId) {
-        this.questionnaireId = questionnaireId;
-    }
-
     public Integer getStudentId() {
         return studentId;
     }
@@ -37,20 +29,20 @@ public class SubmitQuestionnaire {
         this.studentId = studentId;
     }
 
-    public Integer getQuestionnaireTitleId() {
-        return questionnaireTitleId;
+    public Integer getQuestionnaireId() {
+        return questionnaireId;
     }
 
-    public void setQuestionnaireTitleId(Integer questionnaireTitleId) {
-        this.questionnaireTitleId = questionnaireTitleId;
+    public void setQuestionnaireId(Integer questionnaireId) {
+        this.questionnaireId = questionnaireId;
     }
 
-    public Integer getQuestionnaireContextId() {
-        return questionnaireContextId;
+    public Date getSubmitTime() {
+        return submitTime;
     }
 
-    public void setQuestionnaireContextId(Integer questionnaireContextId) {
-        this.questionnaireContextId = questionnaireContextId;
+    public void setSubmitTime(Date submitTime) {
+        this.submitTime = submitTime;
     }
 
     public Integer getSubmitState() {

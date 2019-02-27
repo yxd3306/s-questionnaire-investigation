@@ -18,6 +18,7 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -41,6 +42,8 @@ public class StudentServiceImpl implements StudentService {
     QuestionnaireContextTitleMapper questionnaireContextTitleMapper;
     @Autowired
     QuestionnaireContextMapper questionnaireContextMapper;
+    @Autowired
+    SubmitContextMapper submitContextMapper;
     @Autowired
     SubmitQuestionnaireMapper submitQuestionnaireMapper;
 
@@ -109,7 +112,7 @@ public class StudentServiceImpl implements StudentService {
 
             List<RestQuestionnaireObject> restQuestionnaireObjects = new ArrayList<>();
 
-            /*List<TeacherQuestionnaireStudent> teacherQuestionnaireStudents = teacherQuestionnaireStudentMapper.selectQuestionnaireByStudentId(studentId);*/
+            List<SubmitQuestionnaire> submitQuestionnaires=submitQuestionnaireMapper.selectQuestionnaireByStudentId(studentId);
             int countNums = 0;
 
 
@@ -122,19 +125,30 @@ public class StudentServiceImpl implements StudentService {
 
             Page<Questionnaire> questionnaires = questionnaireMapper.selectByPrimaryKeys();
             countNums = questionnaireMapper.countByKey();
-            for (Questionnaire questionnaire : questionnaires) {
+            for (int i = 0; i < questionnaires.size(); i++) {
                 RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
-                restQuestionnaireObject.setQuestionnaireId(questionnaire.getId());
-                restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
-                restQuestionnaireObject.setQuestionnaireState(questionnaire.getState());
+                restQuestionnaireObject.setQuestionnaireId(questionnaires.get(i).getId());
+                restQuestionnaireObject.setQuestionnaireTitle(questionnaires.get(i).getTitle());
+                restQuestionnaireObject.setQuestionnaireState(questionnaires.get(i).getState());
                 try {
-                    restQuestionnaireObject.setQuestionnaireReleaseTime(DateUtil.dateFormat(questionnaire.getReleaseTime(), DateUtil.HOUR_PATTERN));
+                    restQuestionnaireObject.setQuestionnaireReleaseTime(DateUtil.dateFormat(questionnaires.get(i).getReleaseTime(), DateUtil.HOUR_PATTERN));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                if(submitQuestionnaires.size()==0){
+                    restQuestionnaireObject.setSubmitQuestionnaireState(0);
+                }
+                for(int j = 0; j < submitQuestionnaires.size();j++){
+                    System.out.println(questionnaires.get(i).getId()+":"+submitQuestionnaires.get(j).getQuestionnaireId()+":"+submitQuestionnaires.get(j).getSubmitState());
+                    if(questionnaires.get(i).getId().equals(submitQuestionnaires.get(j).getQuestionnaireId())){
+                        restQuestionnaireObject.setSubmitQuestionnaireState(submitQuestionnaires.get(j).getSubmitState());
+                    }else{
+                        restQuestionnaireObject.setSubmitQuestionnaireState(0);
+                    }
+                    continue;
+                }
                 restQuestionnaireObjects.add(restQuestionnaireObject);
             }
-
 
             PageBean<RestQuestionnaireObject> pageData = new PageBean<>(currentPage, pageSize, countNums);
             pageData.setItems(restQuestionnaireObjects);
@@ -159,7 +173,6 @@ public class StudentServiceImpl implements StudentService {
         if (null != studentId && studentId > 0) {
             List<RestQuestionnaireObject> restQuestionnaireObjects = new ArrayList<>();
 
-            /*List<TeacherQuestionnaireStudent> teacherQuestionnaireStudents = teacherQuestionnaireStudentMapper.selectQuestionnaireByStudentId(studentId);*/
             int countNums = 0;
 
 
@@ -169,20 +182,78 @@ public class StudentServiceImpl implements StudentService {
                 PageHelper.startPage(currentPage);
             }
 
-            List<Integer> ids = new ArrayList<>();
+            List<SubmitQuestionnaire> submitQuestionnaires=submitQuestionnaireMapper.selectQuestionnaireByStudentId(studentId);
+
             Page<Questionnaire> questionnaires = questionnaireMapper.selectByPrimaryKeysForStatte(state);
             countNums = questionnaireMapper.countByKeyByForStatte(state);
-            for (Questionnaire questionnaire : questionnaires) {
-                RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
-                restQuestionnaireObject.setQuestionnaireId(questionnaire.getId());
-                restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
-                restQuestionnaireObject.setQuestionnaireState(questionnaire.getState());
-                try {
-                    restQuestionnaireObject.setQuestionnaireReleaseTime(DateUtil.dateFormat(questionnaire.getReleaseTime(), DateUtil.HOUR_PATTERN));
-                } catch (ParseException e) {
-                    e.printStackTrace();
+            for (int i = 0; i < questionnaires.size(); i++) {
+
+
+                if(state==3){// 已提交
+                    for(int j = 0; j < submitQuestionnaires.size();j++){
+
+                        if(questionnaires.get(i).getId().equals(submitQuestionnaires.get(j).getQuestionnaireId())){
+                            RestQuestionnaireObject restQuestionnaireObject1 = new RestQuestionnaireObject();
+                            restQuestionnaireObject1.setQuestionnaireId(questionnaires.get(i).getId());
+                            restQuestionnaireObject1.setQuestionnaireTitle(questionnaires.get(i).getTitle());
+                            restQuestionnaireObject1.setQuestionnaireState(questionnaires.get(i).getState());
+                            restQuestionnaireObject1.setSubmitQuestionnaireState(submitQuestionnaires.get(j).getSubmitState());
+                            try {
+                                restQuestionnaireObject1.setQuestionnaireReleaseTime(DateUtil.dateFormat(questionnaires.get(i).getReleaseTime(), DateUtil.HOUR_PATTERN));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            restQuestionnaireObjects.add(restQuestionnaireObject1);
+                        }
+
+                    }
+                }else if(state==2){ //进行中
+                    for(int j = 0; j < submitQuestionnaires.size();j++){
+
+                        if(!questionnaires.get(i).getId().equals(submitQuestionnaires.get(j).getQuestionnaireId())){
+                            RestQuestionnaireObject restQuestionnaireObject1 = new RestQuestionnaireObject();
+                            restQuestionnaireObject1.setQuestionnaireId(questionnaires.get(i).getId());
+                            restQuestionnaireObject1.setQuestionnaireTitle(questionnaires.get(i).getTitle());
+                            restQuestionnaireObject1.setQuestionnaireState(questionnaires.get(i).getState());
+                            restQuestionnaireObject1.setSubmitQuestionnaireState(submitQuestionnaires.get(j).getSubmitState());
+                            try {
+                                restQuestionnaireObject1.setQuestionnaireReleaseTime(DateUtil.dateFormat(questionnaires.get(i).getReleaseTime(), DateUtil.HOUR_PATTERN));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            restQuestionnaireObjects.add(restQuestionnaireObject1);
+                        }
+
+                    }
+
+                }else{// 全部
+                    RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
+                    restQuestionnaireObject.setQuestionnaireId(questionnaires.get(i).getId());
+                    restQuestionnaireObject.setQuestionnaireTitle(questionnaires.get(i).getTitle());
+                    restQuestionnaireObject.setQuestionnaireState(questionnaires.get(i).getState());
+                    try {
+                        restQuestionnaireObject.setQuestionnaireReleaseTime(DateUtil.dateFormat(questionnaires.get(i).getReleaseTime(), DateUtil.HOUR_PATTERN));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    if(submitQuestionnaires.size()==0&&questionnaires.get(i).getState()!=4){
+                        restQuestionnaireObject.setSubmitQuestionnaireState(0);
+                    }
+                    if(submitQuestionnaires.size()>0){
+                        for(int j = 0; j < submitQuestionnaires.size();j++){
+                            System.out.println(questionnaires.get(i).getId()+":"+submitQuestionnaires.get(j).getQuestionnaireId()+":"+submitQuestionnaires.get(j).getSubmitState());
+                            if(questionnaires.get(i).getId().equals(submitQuestionnaires.get(j).getQuestionnaireId())){
+                                restQuestionnaireObject.setSubmitQuestionnaireState(submitQuestionnaires.get(j).getSubmitState());
+                            }else{
+                                restQuestionnaireObject.setSubmitQuestionnaireState(0);
+                            }
+                        }
+                    }
+                    restQuestionnaireObjects.add(restQuestionnaireObject);
                 }
-                restQuestionnaireObjects.add(restQuestionnaireObject);
+
+
+
             }
 
 
@@ -262,13 +333,19 @@ public class StudentServiceImpl implements StudentService {
             questionnaire.setState(3);
             restId += questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
             for (String context : contexts) {
-                SubmitQuestionnaire submitQuestionnaire = new SubmitQuestionnaire();
+                SubmitContext submitQuestionnaire = new SubmitContext();
                 submitQuestionnaire.setQuestionnaireId(questionnaireId);
                 submitQuestionnaire.setStudentId(studentId);
                 submitQuestionnaire.setQuestionnaireContextId(Integer.parseInt(context));
                 submitQuestionnaire.setSubmitState(1);
-                restId += submitQuestionnaireMapper.insert(submitQuestionnaire);
+                restId += submitContextMapper.insert(submitQuestionnaire);
             }
+            SubmitQuestionnaire submitQuestionnaire = new SubmitQuestionnaire();
+            submitQuestionnaire.setStudentId(studentId);
+            submitQuestionnaire.setQuestionnaireId(questionnaireId);
+            submitQuestionnaire.setSubmitState(1);
+            submitQuestionnaire.setSubmitTime(new Date());
+            restId += submitQuestionnaireMapper.insert(submitQuestionnaire);
             if (restId > 0) {
                 jsonObject.put("code", 1);
                 jsonObject.put("msg", "提交成功");
@@ -307,19 +384,18 @@ public class StudentServiceImpl implements StudentService {
                 for (QuestionnaireContextTitle questionnaireContextTitle : questionnaireContextTitles) {
 
                     List<QuestionnaireContext> questionnaireContexts = questionnaireContextMapper.selectQuestionnaireContexts(questionnaireContextTitle.getId());
-                    List<SubmitQuestionnaire> submitQuestionnaires = submitQuestionnaireMapper.selectByQuestionnaireIdAndStudentId(questionnaire.getId(),studentId);
+                    List<SubmitContext> submitContexts = submitContextMapper.selectByQuestionnaireIdAndStudentId(questionnaire.getId(),studentId);
                     for (int i = 0; i < questionnaireContexts.size(); i++) {
-                        if(i<submitQuestionnaires.size()){
-                            System.out.println(questionnaireContexts.get(i).getId()+"::"+submitQuestionnaires.get(i).getQuestionnaireContextId());
-                            if(questionnaireContexts.get(i).getId().equals(submitQuestionnaires.get(i).getQuestionnaireContextId())){
+                        if(i<submitContexts.size()){
+                            if(questionnaireContexts.get(i).getId().equals(submitContexts.get(i).getQuestionnaireContextId())){
                                 RestSubmitContext restSubmitContext = new RestSubmitContext();
                                 restSubmitContext.setContextId(questionnaireContexts.get(i).getId());
                                 restSubmitContext.setContext(questionnaireContexts.get(i).getContext());
                                 restSubmitContext.setContextState(questionnaireContexts.get(i).getState());
                                 restSubmitContext.setQuestionnaireContextTitleId(questionnaireContexts.get(i).getQuestionnaireContextTitleId());
                                 restSubmitContext.setQuestionnaireId(questionnaireId);
-                                restSubmitContext.setSubmitState(submitQuestionnaires.get(i).getSubmitState());
-                                restSubmitContext.setStudentId(submitQuestionnaires.get(i).getStudentId());
+                                restSubmitContext.setSubmitState(submitContexts.get(i).getSubmitState());
+                                restSubmitContext.setStudentId(submitContexts.get(i).getStudentId());
                                 restSubmitContexts.add(restSubmitContext);
                             }
                         }else{
@@ -344,6 +420,59 @@ public class StudentServiceImpl implements StudentService {
             }
         }
 
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject selectTeacherByUserName(HttpServletRequest request) {
+        TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+        String userName = requestParam.get("userName");
+        if(userName.isEmpty()&&null==userName){
+            jsonObject.put("code", 0);
+            jsonObject.put("msg", "注册异常");
+            jsonObject.put("data", "");
+        }else {
+            Student student = studentMapper.selectByUserName(userName);
+            if (student != null) {
+                jsonObject.put("code", 0);
+                jsonObject.put("msg", "注册异常");
+                jsonObject.put("data", "");
+            } else {
+                jsonObject.put("code", 1);
+                jsonObject.put("msg", "");
+                jsonObject.put("data", "");
+            }
+        }
+        return jsonObject;
+    }
+
+    @Override
+    public JSONObject forgot(HttpServletRequest request) {
+        TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
+        JSONObject jsonObject = new JSONObject();
+        String username = requestParam.get("username");
+        String name = requestParam.get("name");
+        String email = requestParam.get("email");
+        String md5Pass = DigestUtils.md5DigestAsHex(requestParam.get("password").getBytes());
+        Student student = studentMapper.selectByUserNameAndNameAndEmail(username,name,email);
+        jsonObject.put("code", 0);
+        jsonObject.put("msg", "修改失败");
+        jsonObject.put("data", "");
+        if(null!=student){
+            Student student1 = new Student();
+            student1.setId(student.getId());
+            student1.setUsername(username);
+            student1.setName(name);
+            student1.setPassword(md5Pass);
+            student1.setEmail(email);
+            int i = studentMapper.updateByPrimaryKeySelective(student1);
+            if(i>0){
+                jsonObject.put("code", 1);
+                jsonObject.put("msg", "修改成功");
+                jsonObject.put("data", "");
+            }
+        }
         return jsonObject;
     }
 }

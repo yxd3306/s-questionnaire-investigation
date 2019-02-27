@@ -44,7 +44,7 @@
             <span>消息</span>
         </a>
         &nbsp;
-        <a href="/teacher/login.html">
+        <a href="/student/login.html">
             <img src="../../static/teacher/img/out.png">
             <span>退出</span>
         </a>
@@ -52,7 +52,6 @@
 </nav>
 
 <nav class="info-body">
-    <div class="info-hade"></div>
     <div class="info-list">
         <div class="info-list-title">
             <span class="title" id="title"></span>
@@ -66,6 +65,7 @@
             <button class="list-context-submit hide-mode">
                 提交
             </button>
+            <div class="clear"></div>
         </div>
     </div>
 
@@ -76,6 +76,7 @@
 <script type="text/javascript">
     var questionnaireId='';
     var state=-1;
+    var state2=-1;
     var userid='';
     var userName=''
     $(function () {
@@ -83,11 +84,12 @@
         userid = common.getCookie("studentUserId");
         var path = window.location.pathname;
         questionnaireId= path.split("/")[3];
-        state=common.getCookie("state");
+        state=common.getCookie("state1");
+        state2=common.getCookie("state2");
         $('#userInfo').html(userName);
 
         var data='';
-        if(state==2){
+        if(state!=4&&state2==0){
             data  ={
                 questionnaireId:questionnaireId,
                 state:state
@@ -97,7 +99,16 @@
             // 加载没有提交过的问卷
             initData(data)
         }
-        if(state==3){
+        if(state2==1){
+            data={
+                questionnaireId:questionnaireId,
+                studentId:userid,
+                state:state
+            }
+
+            loadSubmitData(data);
+        }
+        if(state==4){
             data={
                 questionnaireId:questionnaireId,
                 studentId:userid,

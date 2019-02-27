@@ -17,4 +17,8 @@ public interface StudentMapper {
     int updateByPrimaryKey(Student record);
 
     Student login(@Param("username") String username, @Param("password") String password);
+
+    Student selectByUserName(@Param("username") String username);
+
+    Student selectByUserNameAndNameAndEmail(@Param("username")String username, @Param("name")String name, @Param("email")String email);
 }

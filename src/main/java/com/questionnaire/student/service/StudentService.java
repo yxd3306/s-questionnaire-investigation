@@ -24,4 +24,8 @@ public interface StudentService {
     JSONObject submitQuestionnaire(HttpServletRequest request);
 
     JSONObject loadSubmitData(HttpServletRequest request);
+
+    JSONObject selectTeacherByUserName(HttpServletRequest request);
+
+    JSONObject forgot(HttpServletRequest request);
 }

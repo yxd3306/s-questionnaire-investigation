@@ -62,6 +62,10 @@ public class LoginApi {
             return "/register.html";
         } else if("teacher".equals(path)&&"register.html".equals(page)){
             return "/register.html";
+        } else if("student".equals(path)&&"forgot.html".equals(page)){
+            return "/forgot.html";
+        }else if("teacher".equals(path)&&"forgot.html".equals(page)){
+            return "/forgot.html";
         }
         return null;
     }
@@ -79,6 +83,14 @@ public class LoginApi {
     @RequestMapping("/student/{queryQuestionnaireById}/{questionnaireId}")
     public String toInfoPage(@PathVariable String queryQuestionnaireById,@PathVariable Integer questionnaireId){
         return "/student/info.html";
+    }
+    @RequestMapping("/teacher/loadSubmitStudent/{id}")
+    public String loadSubmitStudent(@PathVariable Integer id){
+        return "/teacher/loadSubmitStudent.html";
+    }
+    @RequestMapping("/teacher/loadSubmitInfo/{studentId}/{questionnaireId}")
+    public String loadSubmitInfo(@PathVariable Integer studentId,@PathVariable Integer questionnaireId){
+        return "/teacher/loadSubmitInfo.html";
     }
 
 

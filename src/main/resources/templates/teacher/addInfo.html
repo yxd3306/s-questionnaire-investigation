@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>问卷网-创建测评</title>
+    <title>问卷网-创建问卷</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../../static/teacher/css/addInfo.css">
@@ -50,7 +50,6 @@
     </div>
 </nav>
 <nav class="add-body">
-    <div class="add-head"></div>
     <div class="add-title">
         问卷标题：<span class="title" id="title"></span>
         <button class="add-title-release hide-mode">添加问卷</button>
@@ -58,8 +57,6 @@
     <div class="add-context">
         <button class="add-title-button" id="opener">批量添加题目</button>
     </div>
-
-
 </nav>
 
 </body>
@@ -72,11 +69,14 @@
         var judgePath = RegExp(/queryQuestionnaireById/);
         var data ='';
         if(judgePath.test(path)){
+            document.title = '问卷网-问卷详情';
+            $('.add-context').addClass('hide-mode');
+            $('.add-context').removeClass('add-context');
             data={
                 questionnaireId: path.split("/")[3]
             }
         }else{
-            $('.add-title-release').removeClass('hide-mode')
+            $('.add-title-release').removeClass('hide-mode');
             data={
                 questionnaireId: questionnaireId
             }
@@ -87,14 +87,11 @@
             data,
             function (e) {
                 if (e.code == 1) {
-                    if(judgePath.test(path)){
+                    $('#title').html(e.data.questionnaireTitle)
+                    if (judgePath.test(path)) {
                         $('.add-title').append('<br/>' +
                             '                    ' +
                             '            <span class="release-time">创建时间:<span class="release-time-info">'+e.data.questionnaireCreateTime+'</span></span>')
-                    }
-                    $('#title').html(e.data.questionnaireTitle)
-                    if (judgePath.test(path)) {
-                        console.log()
                         $('.add-title-release').addClass('hide-mode')
                         selectQuestionnaireByKey(e.data);
                     }
@@ -149,18 +146,13 @@
         $('.add-title-release').click(function () {
             add();
         })
+
+        $('.add-body').on('click','.float-button',function () {
+            var id=$('.float-button').attr('id')
+            window.location.href='/teacher/loadSubmitStudent/'+id+'';
+        })
     })
 
-    /*queryQuestionnaireById()
-
-
-    function queryQuestionnaireById() {
-        var path=window.location.pathname
-        var pathArr=new Array();
-        var questionnaireId='';
-        pathArr=path.split('/');
-        questionnaireId=pathArr[pathArr.length-1];
-    }*/
 
 
     function add() {
@@ -211,7 +203,11 @@
             var titleLength = restData.questionnaireContextTitles.length;
             var contextLength = restData.questionnaireContexts.length;
             var index = 0;
-
+            if(restData.questionnaireState==4){
+                $('.add-body').append('<button class="float-button" id="'+restData.questionnaireId+'">' +
+                    '        查看提交详情' +
+                    '    </button>')
+            }
             for (var i = 0; i < titleLength; i++) {
                 var html = '';
                 html += '<div class="add-context-info">' +
@@ -234,6 +230,7 @@
 
 
             }
+            $('.add-context-info').addClass('query')
             var b = $('.add-title-release')
             if (restData.questionnaireState == 1)
                 $(b).html('进行中')

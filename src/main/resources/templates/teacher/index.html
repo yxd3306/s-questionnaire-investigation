@@ -64,9 +64,9 @@
         </a>
     </div>
     <div class="head-nav ">
-        <a href="/teacher/index.html">
+        <a href="/teacher/index.html" onClick="loginout(this)">
             <img src="../../static/teacher/img/my.png">
-            <span>我的问卷</span>
+            我的问卷
         </a>
         &nbsp;
         <a href="javascript:void(0)">
@@ -84,9 +84,9 @@
             <span>消息</span>
         </a>
         &nbsp;
-        <a href="/teacher/login.html">
+        <a href="/teacher/login.html" onClick="loginout(this)">
             <img src="../../static/teacher/img/out.png">
-            <span>退出</span>
+            退出
         </a>
     </div>
 </nav>
@@ -121,7 +121,7 @@
                     <td>
                         <button class="all-list hav-all-lis">全选</button>
                     </td>
-                    <td>编号</td>
+                    <td>序号</td>
                     <td>标题</td>
                     <td>状态</td>
                     <td>创建时间</td>
@@ -197,7 +197,6 @@
                             pageSize: pageSize
                         }
                         initData(data);
-                        console.log($('.zxf_pagediv').children());
 
                     }
                 }
@@ -355,7 +354,7 @@
                                     '<td class="ok td">待收回</td>' +
                                     '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                     '<td class="td">' +
-                                    '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
+                                    '<button class="back" onClick="doSomething(' + v.questionnaireId + ',null,this)">收回</button>' +
                                     '|' +
                                     '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
@@ -376,7 +375,7 @@
                                     '<td class="draft td">草稿</td>' +
                                     '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                     '<td class="td">' +
-                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',null,this)">修改</button>' +
                                     '|' +
                                     '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
@@ -530,18 +529,6 @@
                             pageSize: pageSize
                         }
                         initData(data);
-                        /*$.each(objs, function (i, v) {
-                            $(v).addClass("wait")
-                            $(v).text("已发布")
-                        })
-                        $.each(dos, function (i, v) {
-                            $(v).addClass("prohibit")
-                        })
-                        $.each(checks, function (i, v) {
-                            $(v).prop("checked", false);
-                            $(v).attr('state', 2)
-                        })*/
-                        // window.location.reload()
                     } else {
                         return;
                     }
@@ -580,7 +567,7 @@
                                 '<td class="ok td">待收回</td>' +
                                 '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                 '<td class="td">' +
-                                '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
+                                '<button class="back" onClick="doSomething(' + v.questionnaireId + ',null,this)">收回</button>' +
                                 '|' +
                                 '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
@@ -600,7 +587,7 @@
                                 '<td class="draft td">草稿</td>' +
                                 '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                 '<td class="td">' +
-                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',null,this)">修改</button>' +
                                 '|' +
                                 '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
@@ -777,7 +764,7 @@
                                     '<td class="ok td">待收回</td>' +
                                     '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                     '<td class="td">' +
-                                    '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
+                                    '<button class="back" onClick="doSomething(' + v.questionnaireId + ',null,this)">收回</button>' +
                                     '|' +
                                     '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
@@ -797,7 +784,7 @@
                                     '<td class="draft td">草稿</td>' +
                                     '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                     '<td class="td">' +
-                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',null,this)">修改</button>' +
                                     '|' +
                                     '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
@@ -938,7 +925,7 @@
                                     '<td class="ok td">待收回</td>' +
                                     '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                     '<td class="td">' +
-                                    '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
+                                    '<button class="back" onClick="doSomething(' + v.questionnaireId + ',null,this)">收回</button>' +
                                     '|' +
                                     '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
@@ -959,7 +946,7 @@
                                     '<td class="draft td">草稿</td>' +
                                     '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                     '<td class="td">' +
-                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                    '<button class="update" onClick="doSomething(' + v.questionnaireId + ',null,this)">修改</button>' +
                                     '|' +
                                     '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                     '|' +
@@ -1049,7 +1036,7 @@
                                 '<td class="ok td">待收回</td>' +
                                 '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                 '<td class="td">' +
-                                '<button class="back" onClick="doSomething(' + v.questionnaireId + ',this)">收回</button>' +
+                                '<button class="back" onClick="doSomething(' + v.questionnaireId + ',null,this)">收回</button>' +
                                 '|' +
                                 '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
@@ -1069,7 +1056,7 @@
                                 '<td class="draft td">草稿</td>' +
                                 '<td class="td">' + v.questionnaireCreateTime + '</td>' +
                                 '<td class="td">' +
-                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',this)">修改</button>' +
+                                '<button class="update" onClick="doSomething(' + v.questionnaireId + ',null,this)">修改</button>' +
                                 '|' +
                                 '<button class="query" onClick="doSomething(' + v.questionnaireId + ','+ v.questionnaireState +',this)">查看</button>' +
                                 '|' +
@@ -1130,6 +1117,15 @@
             },
             false
         )
+    }
+
+
+    function loginout(obj) {
+        console.log($(obj).text())
+        if($(obj).text().trim()=="退出")
+            window.location.href='/teacher/login.html'
+        else
+            window.location.reload()
     }
 
 

@@ -125,3 +125,6 @@ table tbody tr td *,ul li *{
     margin-right: 50px;
     color: #c5bebe;
 }
+.clear {
+    clear: both
+}

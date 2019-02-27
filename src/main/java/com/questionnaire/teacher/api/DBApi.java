@@ -84,6 +84,26 @@ public class DBApi {
     public JSONObject backQuestionnaireById(HttpServletRequest request){
         return teacherService.backQuestionnaireById(request);
     }
+    @RequestMapping(value = "/teacher/selectSubmitDataById",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject selectSubmitDataById(HttpServletRequest request){
+        return teacherService.selectSubmitDataById(request);
+    }
+    @RequestMapping(value = "/teacher/loadSubmitData",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject loadSubmitData(HttpServletRequest request){
+        return teacherService.loadSubmitData(request);
+    }
+    @RequestMapping(value = "/teacher/selectTeacherByUserName",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject selectTeacherByUserName(HttpServletRequest request){
+        return teacherService.selectTeacherByUserName(request);
+    }
+    @RequestMapping(value = "/teacher/forgot",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject forgot(HttpServletRequest request){
+        return teacherService.forgot(request);
+    }
 
 
 

@@ -3,15 +3,13 @@
 <mapper namespace="com.questionnaire.dao.SubmitQuestionnaireMapper">
     <resultMap id="BaseResultMap" type="com.questionnaire.entity.SubmitQuestionnaire">
         <id column="id" property="id" jdbcType="INTEGER"/>
-        <result column="questionnaire_id" property="questionnaireId" jdbcType="INTEGER"/>
         <result column="student_id" property="studentId" jdbcType="INTEGER"/>
-        <result column="questionnaire_title_id" property="questionnaireTitleId" jdbcType="INTEGER"/>
-        <result column="questionnaire_context_id" property="questionnaireContextId" jdbcType="INTEGER"/>
+        <result column="questionnaire_id" property="questionnaireId" jdbcType="INTEGER"/>
+        <result column="submit_time" property="submitTime" jdbcType="TIMESTAMP"/>
         <result column="submit_state" property="submitState" jdbcType="INTEGER"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, questionnaire_id, student_id, questionnaire_title_id, questionnaire_context_id, 
-    submit_state
+    id, student_id, questionnaire_id, submit_time, submit_state
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -24,12 +22,10 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
     <insert id="insert" parameterType="com.questionnaire.entity.SubmitQuestionnaire">
-    insert into t_submit_questionnaire (id, questionnaire_id, student_id, 
-      questionnaire_title_id, questionnaire_context_id, 
-      submit_state)
-    values (#{id,jdbcType=INTEGER}, #{questionnaireId,jdbcType=INTEGER}, #{studentId,jdbcType=INTEGER}, 
-      #{questionnaireTitleId,jdbcType=INTEGER}, #{questionnaireContextId,jdbcType=INTEGER}, 
-      #{submitState,jdbcType=INTEGER})
+    insert into t_submit_questionnaire (id, student_id, questionnaire_id, 
+      submit_time, submit_state)
+    values (#{id,jdbcType=INTEGER}, #{studentId,jdbcType=INTEGER}, #{questionnaireId,jdbcType=INTEGER}, 
+      #{submitTime,jdbcType=TIMESTAMP}, #{submitState,jdbcType=INTEGER})
   </insert>
     <insert id="insertSelective" parameterType="com.questionnaire.entity.SubmitQuestionnaire">
         insert into t_submit_questionnaire
@@ -37,17 +33,14 @@
             <if test="id != null">
                 id,
             </if>
-            <if test="questionnaireId != null">
-                questionnaire_id,
-            </if>
             <if test="studentId != null">
                 student_id,
             </if>
-            <if test="questionnaireTitleId != null">
-                questionnaire_title_id,
+            <if test="questionnaireId != null">
+                questionnaire_id,
             </if>
-            <if test="questionnaireContextId != null">
-                questionnaire_context_id,
+            <if test="submitTime != null">
+                submit_time,
             </if>
             <if test="submitState != null">
                 submit_state,
@@ -57,17 +50,14 @@
             <if test="id != null">
                 #{id,jdbcType=INTEGER},
             </if>
-            <if test="questionnaireId != null">
-                #{questionnaireId,jdbcType=INTEGER},
-            </if>
             <if test="studentId != null">
                 #{studentId,jdbcType=INTEGER},
             </if>
-            <if test="questionnaireTitleId != null">
-                #{questionnaireTitleId,jdbcType=INTEGER},
+            <if test="questionnaireId != null">
+                #{questionnaireId,jdbcType=INTEGER},
             </if>
-            <if test="questionnaireContextId != null">
-                #{questionnaireContextId,jdbcType=INTEGER},
+            <if test="submitTime != null">
+                #{submitTime,jdbcType=TIMESTAMP},
             </if>
             <if test="submitState != null">
                 #{submitState,jdbcType=INTEGER},
@@ -77,17 +67,14 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.questionnaire.entity.SubmitQuestionnaire">
         update t_submit_questionnaire
         <set>
-            <if test="questionnaireId != null">
-                questionnaire_id = #{questionnaireId,jdbcType=INTEGER},
-            </if>
             <if test="studentId != null">
                 student_id = #{studentId,jdbcType=INTEGER},
             </if>
-            <if test="questionnaireTitleId != null">
-                questionnaire_title_id = #{questionnaireTitleId,jdbcType=INTEGER},
+            <if test="questionnaireId != null">
+                questionnaire_id = #{questionnaireId,jdbcType=INTEGER},
             </if>
-            <if test="questionnaireContextId != null">
-                questionnaire_context_id = #{questionnaireContextId,jdbcType=INTEGER},
+            <if test="submitTime != null">
+                submit_time = #{submitTime,jdbcType=TIMESTAMP},
             </if>
             <if test="submitState != null">
                 submit_state = #{submitState,jdbcType=INTEGER},
@@ -97,20 +84,26 @@
     </update>
     <update id="updateByPrimaryKey" parameterType="com.questionnaire.entity.SubmitQuestionnaire">
     update t_submit_questionnaire
-    set questionnaire_id = #{questionnaireId,jdbcType=INTEGER},
-      student_id = #{studentId,jdbcType=INTEGER},
-      questionnaire_title_id = #{questionnaireTitleId,jdbcType=INTEGER},
-      questionnaire_context_id = #{questionnaireContextId,jdbcType=INTEGER},
+    set student_id = #{studentId,jdbcType=INTEGER},
+      questionnaire_id = #{questionnaireId,jdbcType=INTEGER},
+      submit_time = #{submitTime,jdbcType=TIMESTAMP},
       submit_state = #{submitState,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-
     <!--自定义-->
-    <select id="selectByQuestionnaireIdAndStudentId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    <select id="selectQuestionnaireByStudentId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
         <include refid="Base_Column_List"/>
         from t_submit_questionnaire
-        where questionnaire_id = #{questionnaireId,jdbcType=INTEGER} and student_id = #{studentId,jdbcType=INTEGER} and submit_state=1
+        where student_id = #{studentId,jdbcType=INTEGER}
     </select>
+    <select id="selectSubmitDataById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from t_submit_questionnaire
+        where questionnaire_id = #{questionnaireId,jdbcType=INTEGER}
+    </select>
+
+
 </mapper>

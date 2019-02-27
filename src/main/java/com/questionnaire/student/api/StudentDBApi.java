@@ -5,6 +5,7 @@ import com.questionnaire.student.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,30 +26,40 @@ public class StudentDBApi {
     StudentService studentService;
 
 
-    @RequestMapping("/selectQuestionnaires")
+    @RequestMapping(value ="/selectQuestionnaires",method = RequestMethod.POST)
     @ResponseBody
     public JSONObject selectQuestionnaires(HttpServletRequest request){
         return studentService.selectQuestionnaires(request);
     }
-    @RequestMapping("/selectQuestionnaireByStateForStudentId")
+    @RequestMapping(value ="/selectQuestionnaireByStateForStudentId",method = RequestMethod.POST)
     @ResponseBody
     public JSONObject selectQuestionnaireByStateForStudentId(HttpServletRequest request){
         return studentService.selectQuestionnaireByStateForStudentId(request);
     }
-    @RequestMapping("/selectQuestionnaireById")
+    @RequestMapping(value ="/selectQuestionnaireById",method = RequestMethod.POST)
     @ResponseBody
     public JSONObject selectQuestionnaireById(HttpServletRequest request){
         return studentService.selectQuestionnaireById(request);
     }
-    @RequestMapping("/submitQuestionnaire")
+    @RequestMapping(value ="/submitQuestionnaire",method = RequestMethod.POST)
     @ResponseBody
     public JSONObject submitQuestionnaire(HttpServletRequest request){
         return studentService.submitQuestionnaire(request);
     }
-    @RequestMapping("/loadSubmitData")
+    @RequestMapping(value = "/loadSubmitData",method = RequestMethod.POST)
     @ResponseBody
     public JSONObject loadSubmitData(HttpServletRequest request){
         return studentService.loadSubmitData(request);
+    }
+    @RequestMapping(value = "/selectTeacherByUserName",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject selectTeacherByUserName(HttpServletRequest request){
+        return studentService.selectTeacherByUserName(request);
+    }
+    @RequestMapping(value = "/forgot",method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject forgot(HttpServletRequest request){
+        return studentService.forgot(request);
     }
 
 

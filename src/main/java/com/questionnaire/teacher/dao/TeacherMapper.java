@@ -18,4 +18,7 @@ public interface TeacherMapper {
 
     Teacher login(@Param("username") String username, @Param("password") String password);
 
+    Teacher selectByUserName(@Param("username") String username);
+
+    Teacher selectByUserNameAndNameAndEmail(@Param("username")String username, @Param("name")String name, @Param("email")String email);
 }

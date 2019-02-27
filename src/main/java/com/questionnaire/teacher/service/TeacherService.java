@@ -36,4 +36,12 @@ public interface TeacherService {
     JSONObject selectQuestionnaireBySearch(HttpServletRequest request);
 
     JSONObject backQuestionnaireById(HttpServletRequest request);
+
+    JSONObject selectSubmitDataById(HttpServletRequest request);
+
+    JSONObject loadSubmitData(HttpServletRequest request);
+
+    JSONObject selectTeacherByUserName(HttpServletRequest request);
+
+    JSONObject forgot(HttpServletRequest request);
 }
