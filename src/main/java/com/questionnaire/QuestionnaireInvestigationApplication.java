@@ -1,6 +1,7 @@
 package com.questionnaire;
 
 import com.github.pagehelper.PageHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,11 +11,12 @@ import java.util.Properties;
 
 @SpringBootApplication
 @MapperScan({"com.questionnaire.student.dao", "com.questionnaire.teacher.dao", "com.questionnaire.dao"})
+@Slf4j
 public class QuestionnaireInvestigationApplication {
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         SpringApplication.run(QuestionnaireInvestigationApplication.class, args);
     }
+
 
 
     @Bean
@@ -28,6 +30,8 @@ public class QuestionnaireInvestigationApplication {
         pageHelper.setProperties(properties);
         return pageHelper;
     }
+
+
 
 
 }

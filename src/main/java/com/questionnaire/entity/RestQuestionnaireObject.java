@@ -21,6 +21,7 @@ public class RestQuestionnaireObject {
 
     private String questionnaireCreateTime;
     private String questionnaireReleaseTime;
+    private String submitTime;
 
 
     private List<QuestionnaireContext> questionnaireContexts;
@@ -143,5 +144,13 @@ public class RestQuestionnaireObject {
 
     public void setSubmitQuestionnaireState(Integer submitQuestionnaireState) {
         this.submitQuestionnaireState = submitQuestionnaireState;
+    }
+
+    public String getSubmitTime() {
+        return submitTime;
+    }
+
+    public void setSubmitTime(String submitTime) {
+        this.submitTime = submitTime;
     }
 }

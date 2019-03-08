@@ -21,4 +21,6 @@ public interface SubmitQuestionnaireMapper {
     List<SubmitQuestionnaire> selectQuestionnaireByStudentId(@Param("studentId") Integer studentId);
 
     List<SubmitQuestionnaire> selectSubmitDataById(@Param("questionnaireId") Integer questionnaireId);
+
+    SubmitQuestionnaire selectSubmitDataByQuestionnaireId(@Param("questionnaireId") int questionnaireId, @Param("studentId")int studentId);
 }

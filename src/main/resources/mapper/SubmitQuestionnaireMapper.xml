@@ -104,6 +104,12 @@
         from t_submit_questionnaire
         where questionnaire_id = #{questionnaireId,jdbcType=INTEGER}
     </select>
+    <select id="selectSubmitDataByQuestionnaireId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from t_submit_questionnaire
+        where questionnaire_id = #{questionnaireId,jdbcType=INTEGER} and student_id = #{studentId,jdbcType=INTEGER}
+    </select>
 
 
 </mapper>

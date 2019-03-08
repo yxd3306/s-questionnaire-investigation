@@ -648,11 +648,17 @@ public class TeacherServiceImpl implements TeacherService {
         if(questionnaireId>0
                 &&studentId>0){
             Questionnaire questionnaire = questionnaireMapper.loadSubmitData(questionnaireId);
+            SubmitQuestionnaire submitQuestionnaire = submitQuestionnaireMapper.selectSubmitDataByQuestionnaireId(questionnaireId,studentId);
             List<RestSubmitContext> restSubmitContexts = new ArrayList<>();
             if (null != questionnaire) {
                 RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
                 restQuestionnaireObject.setQuestionnaireId(questionnaire.getId());
                 restQuestionnaireObject.setQuestionnaireTitle(questionnaire.getTitle());
+                try {
+                    restQuestionnaireObject.setSubmitTime(DateUtil.dateFormat(submitQuestionnaire.getSubmitTime(),DateUtil.HOUR_PATTERN));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 try {
                     restQuestionnaireObject.setQuestionnaireReleaseTime(DateUtil.dateFormat(questionnaire.getReleaseTime(), DateUtil.HOUR_PATTERN));
                 } catch (ParseException e) {
