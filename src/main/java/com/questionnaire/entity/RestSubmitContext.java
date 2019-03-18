@@ -5,7 +5,7 @@ package com.questionnaire.entity;
  * @Auther: 喻湘东
  * @Email: Jyxd1997@163.com
  * @Date: 2019-02-26 16:48:29
- * @Description:
+ * @Description: 然会提交内容对象
  */
 public class RestSubmitContext {
 

@@ -1,5 +1,8 @@
 package com.questionnaire.entity;
 
+/**
+ * 提交内容
+ */
 public class SubmitContext {
     private Integer id;
 

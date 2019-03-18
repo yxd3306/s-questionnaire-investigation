@@ -5,7 +5,7 @@ package com.questionnaire.entity;
  * @Auther: 喻湘东
  * @Email: Jyxd1997@163.com
  * @Date: 2019-02-27 09:31:09
- * @Description:
+ * @Description: 返回提交问卷对象
  */
 public class RestSubmitQuestionnaire {
     private Integer submitState;

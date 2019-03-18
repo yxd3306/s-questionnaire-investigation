@@ -7,7 +7,7 @@ import java.util.List;
  * @Auther: 喻湘东
  * @Email: Jyxd1997@163.com
  * @Date: 2019-02-20 10:21:12
- * @Description:
+ * @Description: 返回问卷对象
  */
 public class RestQuestionnaireObject {
 

@@ -273,17 +273,16 @@ public class DateUtil {
      * @return
      */
     public static Date dateMin(Date date, Date compareDate) {
-        if (date == null) {
+        if (date == null)
             return compareDate;
-        }
-        if (compareDate == null) {
+
+        if (compareDate == null)
             return date;
-        }
-        if (1 == dateCompare(date, compareDate)) {
+
+        if (1 == dateCompare(date, compareDate))
             return compareDate;
-        } else if (-1 == dateCompare(date, compareDate)) {
+        else if (-1 == dateCompare(date, compareDate))
             return date;
-        }
         return date;
     }
 

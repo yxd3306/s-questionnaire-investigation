@@ -1,5 +1,8 @@
 package com.questionnaire.entity;
 
+/**
+ * 问卷类型
+ */
 public class QuestionnaireType {
     private Integer id;
 

@@ -19,12 +19,22 @@ public class StudentApi {
     @Autowired
     StudentService studentService;
 
+    /**
+     * 登录
+     * @param request
+     * @return
+     */
     public JSONObject login(HttpServletRequest request) {
 
         return studentService.login(request);
 
     }
 
+    /**
+     * 注册
+     * @param request
+     * @return
+     */
     public JSONObject register(HttpServletRequest request) {
         return studentService.register(request);
     }

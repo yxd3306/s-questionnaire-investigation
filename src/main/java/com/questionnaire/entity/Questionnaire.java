@@ -1,8 +1,13 @@
 package com.questionnaire.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Questionnaire {
+/**
+ * 问卷对象
+ */
+public class Questionnaire implements Serializable {
+
     private Integer id;
 
     private String title;

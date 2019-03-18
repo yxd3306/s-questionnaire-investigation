@@ -1,5 +1,8 @@
 package com.questionnaire.entity;
 
+/**
+ * 问卷内容标题对象
+ */
 public class QuestionnaireContextTitle {
     private Integer id;
 

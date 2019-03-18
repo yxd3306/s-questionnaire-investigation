@@ -13,6 +13,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Component
 public class WebConfig extends WebMvcConfigurationSupport {
 
+    /**
+     * 配置静态资源 css、js、img、png
+     * @param registry
+     */
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");

@@ -2,6 +2,9 @@ package com.questionnaire.entity;
 
 import java.util.Date;
 
+/**
+ * 提交问卷
+ */
 public class SubmitQuestionnaire {
     private Integer id;
 

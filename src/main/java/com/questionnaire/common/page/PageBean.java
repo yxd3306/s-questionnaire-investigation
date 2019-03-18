@@ -7,7 +7,7 @@ import java.util.List;
  * @Auther: 喻湘东
  * @Email: Jyxd1997@163.com
  * @Date: 2019-02-23 13:04:54
- * @Description:
+ * @Description:  分页对象
  */
 public class PageBean<T> {
     // 当前页
