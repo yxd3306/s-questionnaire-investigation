@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>问卷网-创建问卷</title>
+    <title>心理测评平台-添加题目</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../../static/teacher/css/addInfo.css">
@@ -25,7 +25,7 @@
     <div class="head-nav ">
         <a href="/teacher/index.html">
             <img src="../../static/teacher/img/my.png">
-            <span>我的问卷</span>
+            <span>主页</span>
         </a>
         &nbsp;
         <a href="javascript:void(0)">
@@ -37,10 +37,8 @@
             <span id="userInfo">userInfo</span>
         </a>
         &nbsp;
-        <a>
-
-            <img src="../../static/teacher/img/remind.png">
-            <span>消息</span>
+        <a href="javascript:void(0)">
+            <span>|</span>
         </a>
         &nbsp;
         <a href="/teacher/login.html">
@@ -51,8 +49,8 @@
 </nav>
 <nav class="add-body">
     <div class="add-title">
-        问卷标题：<span class="title" id="title"></span>
-        <button class="add-title-release hide-mode">添加问卷</button>
+        测评标题：<span class="title" id="title"></span>
+        <button class="add-title-release hide-mode">添加测评</button>
     </div>
     <div class="add-context">
         <button class="add-title-button" id="opener">批量添加题目</button>
@@ -69,7 +67,7 @@
         var judgePath = RegExp(/queryQuestionnaireById/);
         var data ='';
         if(judgePath.test(path)){
-            document.title = '问卷网-问卷详情';
+            document.title = '心理测评网-测评详情';
             $('.add-context').addClass('hide-mode');
             $('.add-context').removeClass('add-context');
             data={

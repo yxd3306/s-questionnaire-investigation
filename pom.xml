@@ -8,6 +8,7 @@
         <version>2.1.3.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>com.questionnaire</groupId>
     <artifactId>s-questionnaire-investigation</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -17,6 +18,13 @@
     <properties>
         <java.version>1.8</java.version>
     </properties>
+
+    <dependencyManagement>
+
+
+    </dependencyManagement>
+
+
 
     <dependencies>
         <dependency>
@@ -89,6 +97,7 @@
             <artifactId>lombok</artifactId>
             <version>1.18.4</version>
         </dependency>
+
 
     </dependencies>
 

@@ -263,6 +263,11 @@ button{
     width: 90px;
     height: 50px;
     float: right;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    background-color: #1a7913;
+    color: #fff;
 }
 .add-body .add-context-info  .add-context-info-close-query{
     display: none;
@@ -301,5 +306,6 @@ button{
     font-size: 18px;
     border-radius: 8px;
 }
+
 
 

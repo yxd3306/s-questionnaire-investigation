@@ -18,7 +18,10 @@ public class QuestionnaireInvestigationApplication {
     }
 
 
-
+    /**
+     * 配置分页bean
+     * @return pageHelper
+     */
     @Bean
     public PageHelper pageHelper() {
         PageHelper pageHelper = new PageHelper();

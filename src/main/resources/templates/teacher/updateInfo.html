@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>问卷网-修改问卷</title>
+    <title>心理测评平台-修改测评</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../../static/teacher/css/addInfo.css">
@@ -25,7 +25,7 @@
     <div class="head-nav ">
         <a href="/teacher/index.html">
             <img src="../../static/teacher/img/my.png">
-            <span>我的问卷</span>
+            <span>主页</span>
         </a>
         &nbsp;
         <a href="javascript:void(0)">
@@ -37,10 +37,8 @@
             <span id="userInfo">userInfo</span>
         </a>
         &nbsp;
-        <a>
-
-            <img src="../../static/teacher/img/remind.png">
-            <span>消息</span>
+        <a href="javascript:void(0)">
+            <span>|</span>
         </a>
         &nbsp;
         <a href="/teacher/login.html">
@@ -52,8 +50,8 @@
 <nav class="add-body">
     <div class="add-head"></div>
     <div class="add-title">
-        问卷标题：<input class="title-input" id="title" type="text"/>
-        <button class="add-title-release">发布问卷</button>
+        测评标题：<input class="title-input" id="title" type="text"/>
+        <button class="add-title-release">发布测评</button>
     </div>
     <div class="add-context">
         <button class="add-title-button" id="opener">批量添加题目</button>
@@ -165,6 +163,7 @@
         var titleId = "";
         var title = "";
         var context = "";
+        var contextId = "";
 
         for (var i = 0; i < inputT.length; i++) {
             title += $(inputT[i]).val() + ',';
@@ -175,20 +174,25 @@
             for (var j = 0; j < nodes.length; j++) {
                 context += $(nodes[j]).val() + ','
             }
+
+            for (var j = 0; j < nodes.length; j++) {
+                contextId += $(nodes[j]).attr('context-id') + ','
+            }
+
         }
 
-        title = title.replace(/[,，]$/, " ")
-        context = context.replace(/[,，]$/, " ")
-        titleId = titleId.replace(/[,，]$/, " ")
-
-
+        title = title.replace(/[,，]$/, " ");
+        context = context.replace(/[,，]$/, " ");
+        titleId = titleId.replace(/[,，]$/, " ");
+        contextId = contextId.replace(/[,，]$/, " ");
 
         var data = {
             questionnaireId: questionnaireId,
             questionnaireTitle:questionnaireTitle,
             title: title,
             context: context,
-            titleId:titleId
+            titleId:titleId,
+            contextId:contextId
         }
         common.ajaxSend(
             "/teacher/updateContext",
@@ -225,7 +229,7 @@
                 for (var j = 0; j < contextLength / titleLength; j++) {
 
                     html += '            <li>' +
-                        '                <input class="add-context-info-input add-context-info-input-c" type="text" placeholder="选项' + j + '" autocomplete="off" value="' + restData.questionnaireContexts[index].context + '">' +
+                        '                <input class="add-context-info-input add-context-info-input-c" type="text" placeholder="选项' + j + '" autocomplete="off" value="' + restData.questionnaireContexts[index].context + '" context-id="'+restData.questionnaireContexts[index].id+'">' +
                         '            </li>';
                     index++;
                 }

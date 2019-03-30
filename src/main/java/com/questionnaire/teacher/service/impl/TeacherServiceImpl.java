@@ -76,6 +76,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     // 注册
+    @Transactional
     @Override
     public JSONObject register(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
@@ -361,9 +362,11 @@ public class TeacherServiceImpl implements TeacherService {
         String title = allRequestParam.get("title");
         String titleId = allRequestParam.get("titleId");
         String context = allRequestParam.get("context");
+        String contextId = allRequestParam.get("contextId");
         String[] titles = title.split(",");
         String[] contexts = context.split(",");
         String[] titleIds = titleId.split(",");
+        String[] contextIds = contextId.split(",");
         String s = null;
         String c = null;
         String id = null;
@@ -393,7 +396,10 @@ public class TeacherServiceImpl implements TeacherService {
                 oldTitleIndex++;
                 for (int j = 0; j < 4; j++) {
                     String context1 = contexts[oldContextIndex];
+                    String contextId2 = contextIds[oldContextIndex];
+                    Integer contextId1 = Integer.parseInt(contextId2.trim());
                     QuestionnaireContext questionnaireContext = new QuestionnaireContext();
+                    questionnaireContext.setId(contextId1);
                     questionnaireContext.setContext(context1);
                     rest += questionnaireContextMapper.updateByPrimaryKeySelective(questionnaireContext);
                     oldContextIndex++;
@@ -666,37 +672,40 @@ public class TeacherServiceImpl implements TeacherService {
                 }
 
                 List<QuestionnaireContextTitle> questionnaireContextTitles = questionnaireContextTitleMapper.selectQuestionnaireContextTitles(questionnaire.getId());
+                // 根据测评id和学生id查询提交内容
+                List<SubmitContext> submitContexts = submitContextMapper.selectByQuestionnaireIdAndStudentId(questionnaire.getId(),studentId);
                 restQuestionnaireObject.setQuestionnaireContextTitles(questionnaireContextTitles);
+                // 遍历选项标题
                 for (QuestionnaireContextTitle questionnaireContextTitle : questionnaireContextTitles) {
-
+                    // 根据选项标题id查询全部选项内容
                     List<QuestionnaireContext> questionnaireContexts = questionnaireContextMapper.selectQuestionnaireContexts(questionnaireContextTitle.getId());
-                    List<SubmitContext> submitContexts = submitContextMapper.selectByQuestionnaireIdAndStudentId(questionnaire.getId(),studentId);
+                    // 便利全部选项内容
                     for (int i = 0; i < questionnaireContexts.size(); i++) {
-                        if(i<submitContexts.size()){
-                            if(questionnaireContexts.get(i).getId().equals(submitContexts.get(i).getQuestionnaireContextId())){
-                                RestSubmitContext restSubmitContext = new RestSubmitContext();
-                                restSubmitContext.setContextId(questionnaireContexts.get(i).getId());
-                                restSubmitContext.setContext(questionnaireContexts.get(i).getContext());
-                                restSubmitContext.setContextState(questionnaireContexts.get(i).getState());
-                                restSubmitContext.setQuestionnaireContextTitleId(questionnaireContexts.get(i).getQuestionnaireContextTitleId());
-                                restSubmitContext.setQuestionnaireId(questionnaireId);
-                                restSubmitContext.setSubmitState(submitContexts.get(i).getSubmitState());
-                                restSubmitContext.setStudentId(submitContexts.get(i).getStudentId());
-                                restSubmitContexts.add(restSubmitContext);
+                        // 创建返回提交内容对象
+                        RestSubmitContext restSubmitContext = new RestSubmitContext();
+                        // 设置基本的提交内容
+                        restSubmitContext.setContextId(questionnaireContexts.get(i).getId());
+                        restSubmitContext.setContext(questionnaireContexts.get(i).getContext());
+                        restSubmitContext.setContextState(questionnaireContexts.get(i).getState());
+                        restSubmitContext.setQuestionnaireContextTitleId(questionnaireContexts.get(i).getQuestionnaireContextTitleId());
+                        restSubmitContext.setQuestionnaireId(questionnaireId);
+                        // 便利提交的内容
+                        for (int j = 0; j < submitContexts.size(); j++) {
+                            // 判断选项内容id是否一致
+                            if(questionnaireContexts.get(i).getId().equals(submitContexts.get(j).getQuestionnaireContextId())){
+                                // 设置提交状态，前端通过这个装台控制是否勾选 内容选项
+                                restSubmitContext.setSubmitState(submitContexts.get(j).getSubmitState());
+                                // 设置提交的学生id
+                                restSubmitContext.setStudentId(submitContexts.get(j).getStudentId());
+
                             }
-                        }else{
-                            RestSubmitContext restSubmitContext = new RestSubmitContext();
-                            restSubmitContext.setContextId(questionnaireContexts.get(i).getId());
-                            restSubmitContext.setContext(questionnaireContexts.get(i).getContext());
-                            restSubmitContext.setContextState(questionnaireContexts.get(i).getState());
-                            restSubmitContext.setQuestionnaireContextTitleId(questionnaireContexts.get(i).getQuestionnaireContextTitleId());
-                            restSubmitContext.setQuestionnaireId(questionnaireId);
-                            restSubmitContext.setSubmitState(-1);
-                            restSubmitContexts.add(restSubmitContext);
                         }
+                        // 将返回提交内容对象塞到List<RestSubmitContext>集合中
+                        restSubmitContexts.add(restSubmitContext);
                     }
 
                 }
+                // 设置最后返回的对象   设置提交内容（是一个集合）
                 restQuestionnaireObject.setSubmitContexts(restSubmitContexts);
 
 
@@ -733,6 +742,7 @@ public class TeacherServiceImpl implements TeacherService {
         return jsonObject;
     }
 
+    @Transactional
     @Override
     public JSONObject forgot(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);

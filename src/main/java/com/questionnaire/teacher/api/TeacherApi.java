@@ -20,10 +20,20 @@ public class TeacherApi {
     @Autowired
     TeacherService teacherService;
 
+    /**
+     * 登录
+     * @param request
+     * @return
+     */
     public JSONObject login(HttpServletRequest request) {
         return teacherService.login(request);
     }
 
+    /**
+     * 注册
+     * @param request
+     * @return
+     */
     public JSONObject register(HttpServletRequest request) {
         return teacherService.register(request);
     }

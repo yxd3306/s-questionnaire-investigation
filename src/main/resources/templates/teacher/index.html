@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>问卷网-教师端</title>
+    <title>心理测评平台-教师端</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../../static/css/index.css">
@@ -64,7 +64,7 @@
     <div class="head-nav ">
         <a href="/teacher/index.html" onClick="loginout(this)">
             <img src="../../static/teacher/img/my.png">
-            我的问卷
+            主页
         </a>
         &nbsp;
         <a href="javascript:void(0)">
@@ -76,10 +76,8 @@
             <span id="userInfo">userInfo</span>
         </a>
         &nbsp;
-        <a>
-
-            <img src="../../static/teacher/img/remind.png">
-            <span>消息</span>
+        <a href="javascript:void(0)">
+            <span>|</span>
         </a>
         &nbsp;
         <a href="/teacher/login.html" onClick="loginout(this)">
@@ -96,11 +94,11 @@
                 <caption>
                     <button class="has-data-add">
                         <img class="add-img" src="../../static/teacher/img/add-img.png">
-                        <span>创建问卷</span>
+                        <span>创建测评</span>
                     </button>
                     <button class="has-data-release">
                         <img class="add-img" src="../../static/teacher/img/release.png">
-                        <span>发布问卷</span>
+                        <span>发布测评</span>
                     </button>
                     <select id="select-list">
                     </select>
@@ -132,10 +130,10 @@
         </div>
         <div class="not-data hide-mode">
             <img class="not-data-img" src="../../static/teacher/img/not-data.png"><br/>
-            <span class="not-data-text">你目前还没有问卷，马上创建一份问卷吧！</span><br/>
+            <span class="not-data-text">你目前还没有测评，马上创建一份测评吧！</span><br/>
             <button class="not-data-add">
                 <img class="add-img" src="../../static/teacher/img/add-img.png">
-                <span>创建问卷</span>
+                <span>创建测评</span>
             </button>
         </div>
     </div>

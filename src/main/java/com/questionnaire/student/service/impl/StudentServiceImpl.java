@@ -47,6 +47,11 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     SubmitQuestionnaireMapper submitQuestionnaireMapper;
 
+    /**
+     * 学生登录方法
+     * @param request
+     * @return
+     */
     @Override
     public JSONObject login(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
@@ -56,6 +61,7 @@ public class StudentServiceImpl implements StudentService {
             jsonObject.put("msg", "账号或者密码不能为空");
 
         } else {
+            // MD5加密
             String md5Pass = DigestUtils.md5DigestAsHex(requestParam.get("password").getBytes());
             Student student = studentMapper.login(requestParam.get("username"), md5Pass);
             if (null != student) {
@@ -71,6 +77,11 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
+    /**
+     * 学生注册方法
+     * @param request
+     * @return
+     */
     @Override
     public JSONObject register(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
@@ -82,6 +93,7 @@ public class StudentServiceImpl implements StudentService {
         } else {
             Student s = new Student();
             s.setUsername(requestParam.get("username"));
+            // MD5加密
             String md5Pass = DigestUtils.md5DigestAsHex(requestParam.get("password").getBytes());
             s.setPassword(md5Pass);
             s.setName(requestParam.get("name"));
@@ -99,6 +111,11 @@ public class StudentServiceImpl implements StudentService {
         return jsonObject;
     }
 
+    /**
+     * 查询所有问卷
+     * @param request
+     * @return
+     */
     @Override
     public JSONObject selectQuestionnaires(HttpServletRequest request) {
 
@@ -112,20 +129,24 @@ public class StudentServiceImpl implements StudentService {
 
             List<RestQuestionnaireObject> restQuestionnaireObjects = new ArrayList<>();
 
+            // 根据学生id查询问卷
             List<SubmitQuestionnaire> submitQuestionnaires=submitQuestionnaireMapper.selectQuestionnaireByStudentId(studentId);
             int countNums = 0;
 
 
-            if (null != pageSize && pageSize > 0) {
+            if (null != pageSize && pageSize > 0)
+                // 设置分页参数 currentPage 当前页   pageSize 每页条数
                 PageHelper.startPage(currentPage, pageSize);
-            } else {
+            else
                 PageHelper.startPage(currentPage);
-            }
 
-
+            // 执行查询所有问卷sql
             Page<Questionnaire> questionnaires = questionnaireMapper.selectByPrimaryKeys();
+            // 获取条数
             countNums = questionnaireMapper.countByKey();
+            // 遍历问卷
             for (int i = 0; i < questionnaires.size(); i++) {
+                // 创建问卷返回对象
                 RestQuestionnaireObject restQuestionnaireObject = new RestQuestionnaireObject();
                 restQuestionnaireObject.setQuestionnaireId(questionnaires.get(i).getId());
                 restQuestionnaireObject.setQuestionnaireTitle(questionnaires.get(i).getTitle());
@@ -147,20 +168,27 @@ public class StudentServiceImpl implements StudentService {
                     }
                     continue;
                 }
+                // 将返回对象添加到集合中
                 restQuestionnaireObjects.add(restQuestionnaireObject);
             }
 
+            // 创建分页对象，使用泛型
             PageBean<RestQuestionnaireObject> pageData = new PageBean<>(currentPage, pageSize, countNums);
+            // 设置泛型实例
             pageData.setItems(restQuestionnaireObjects);
             jsonObject.put("code", 1);
             jsonObject.put("msg", "问卷返回成功");
             jsonObject.put("data", pageData);
         }
 
-
         return jsonObject;
     }
 
+    /**
+     * 根据学生id和问卷状态查询问卷
+     * @param request
+     * @return
+     */
     @Override
     public JSONObject selectQuestionnaireByStateForStudentId(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
@@ -175,15 +203,16 @@ public class StudentServiceImpl implements StudentService {
 
             int countNums = 0;
 
-
-            if (null != pageSize && pageSize > 0) {
+            // 设置分页
+            if (null != pageSize && pageSize > 0)
                 PageHelper.startPage(currentPage, pageSize);
-            } else {
+            else
                 PageHelper.startPage(currentPage);
-            }
 
+            // 根据学生id查询已提交问卷
             List<SubmitQuestionnaire> submitQuestionnaires=submitQuestionnaireMapper.selectQuestionnaireByStudentId(studentId);
 
+            // 根据问卷状态查询问卷
             Page<Questionnaire> questionnaires = questionnaireMapper.selectByPrimaryKeysForStatte(state);
             countNums = questionnaireMapper.countByKeyByForStatte(state);
             for (int i = 0; i < questionnaires.size(); i++) {
@@ -256,7 +285,6 @@ public class StudentServiceImpl implements StudentService {
 
             }
 
-
             PageBean<RestQuestionnaireObject> pageData = new PageBean<>(currentPage, pageSize, countNums);
             pageData.setItems(restQuestionnaireObjects);
             jsonObject.put("code", 1);
@@ -269,10 +297,17 @@ public class StudentServiceImpl implements StudentService {
         return jsonObject;
     }
 
+
+    /**
+     * 跟据id查询问卷
+     * @param request
+     * @return
+     */
     @Override
     public JSONObject selectQuestionnaireById(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
         JSONObject jsonObject = new JSONObject();
+
 
         Integer id = Integer.parseInt(requestParam.get("questionnaireId"));
         Integer state = Integer.parseInt(requestParam.get("state"));
@@ -280,6 +315,7 @@ public class StudentServiceImpl implements StudentService {
         jsonObject.put("code", 0);
         jsonObject.put("msg", "");
         if (null != id && id > 0) {
+            // 根据id和状态查询问卷
             Questionnaire questionnaire = questionnaireMapper.selectByPrimaryKeyAndState(id, state);
             List<QuestionnaireContext> r_questionnaireContexts = new ArrayList<>();
             if (null != questionnaire) {
@@ -292,18 +328,20 @@ public class StudentServiceImpl implements StudentService {
                     e.printStackTrace();
                 }
 
+                // 根据问卷id查询题目
                 List<QuestionnaireContextTitle> questionnaireContextTitles = questionnaireContextTitleMapper.selectQuestionnaireContextTitles(questionnaire.getId());
                 restQuestionnaireObject.setQuestionnaireContextTitles(questionnaireContextTitles);
                 for (QuestionnaireContextTitle questionnaireContextTitle : questionnaireContextTitles) {
 
+                    // 根据问卷id查询内容
                     List<QuestionnaireContext> questionnaireContexts = questionnaireContextMapper.selectQuestionnaireContexts(questionnaireContextTitle.getId());
                     for (QuestionnaireContext questionnaireContext : questionnaireContexts) {
                         r_questionnaireContexts.add(questionnaireContext);
                     }
 
                 }
+                // 设置返回结果
                 restQuestionnaireObject.setQuestionnaireContexts(r_questionnaireContexts);
-
 
                 jsonObject.put("code", 1);
                 jsonObject.put("msg", "返回成功");
@@ -314,6 +352,11 @@ public class StudentServiceImpl implements StudentService {
         return jsonObject;
     }
 
+    /**
+     * 学生提交问卷
+     * @param request
+     * @return
+     */
     @Override
     public JSONObject submitQuestionnaire(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
@@ -330,7 +373,8 @@ public class StudentServiceImpl implements StudentService {
                 && null != contexts && contexts.length > 0) {
             Questionnaire questionnaire = new Questionnaire();
             questionnaire.setId(questionnaireId);
-            questionnaire.setState(3);
+            questionnaire.setState(3); // 设置问卷提交状态
+            // restId 判断是否提交成功
             restId += questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
             for (String context : contexts) {
                 SubmitContext submitQuestionnaire = new SubmitContext();
@@ -338,6 +382,7 @@ public class StudentServiceImpl implements StudentService {
                 submitQuestionnaire.setStudentId(studentId);
                 submitQuestionnaire.setQuestionnaireContextId(Integer.parseInt(context));
                 submitQuestionnaire.setSubmitState(1);
+                // 插入到提交内容表
                 restId += submitContextMapper.insert(submitQuestionnaire);
             }
             SubmitQuestionnaire submitQuestionnaire = new SubmitQuestionnaire();
@@ -345,6 +390,7 @@ public class StudentServiceImpl implements StudentService {
             submitQuestionnaire.setQuestionnaireId(questionnaireId);
             submitQuestionnaire.setSubmitState(1);
             submitQuestionnaire.setSubmitTime(new Date());
+            // 插入到提交问卷表
             restId += submitQuestionnaireMapper.insert(submitQuestionnaire);
             if (restId > 0) {
                 jsonObject.put("code", 1);
@@ -357,6 +403,11 @@ public class StudentServiceImpl implements StudentService {
         return jsonObject;
     }
 
+    /**
+     * 加载提交了的数据
+     * @param request
+     * @return
+     */
     @Override
     public JSONObject loadSubmitData(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
@@ -367,6 +418,7 @@ public class StudentServiceImpl implements StudentService {
         if(questionnaireId>0
                 &&studentId>0
                 &&state>2){
+            // 根据id、state查询问卷
             Questionnaire questionnaire = questionnaireMapper.selectByPrimaryKeyAndState(questionnaireId, state);
             List<RestSubmitContext> restSubmitContexts = new ArrayList<>();
             if (null != questionnaire) {
@@ -379,38 +431,34 @@ public class StudentServiceImpl implements StudentService {
                     e.printStackTrace();
                 }
 
+                // 查询标题
                 List<QuestionnaireContextTitle> questionnaireContextTitles = questionnaireContextTitleMapper.selectQuestionnaireContextTitles(questionnaire.getId());
                 restQuestionnaireObject.setQuestionnaireContextTitles(questionnaireContextTitles);
                 for (QuestionnaireContextTitle questionnaireContextTitle : questionnaireContextTitles) {
 
+                    // 查询问卷内容
                     List<QuestionnaireContext> questionnaireContexts = questionnaireContextMapper.selectQuestionnaireContexts(questionnaireContextTitle.getId());
+                    // 根据问卷id和学生id查询提交的数据问卷
                     List<SubmitContext> submitContexts = submitContextMapper.selectByQuestionnaireIdAndStudentId(questionnaire.getId(),studentId);
                     for (int i = 0; i < questionnaireContexts.size(); i++) {
-                        if(i<submitContexts.size()){
-                            if(questionnaireContexts.get(i).getId().equals(submitContexts.get(i).getQuestionnaireContextId())){
-                                RestSubmitContext restSubmitContext = new RestSubmitContext();
-                                restSubmitContext.setContextId(questionnaireContexts.get(i).getId());
-                                restSubmitContext.setContext(questionnaireContexts.get(i).getContext());
-                                restSubmitContext.setContextState(questionnaireContexts.get(i).getState());
-                                restSubmitContext.setQuestionnaireContextTitleId(questionnaireContexts.get(i).getQuestionnaireContextTitleId());
-                                restSubmitContext.setQuestionnaireId(questionnaireId);
-                                restSubmitContext.setSubmitState(submitContexts.get(i).getSubmitState());
-                                restSubmitContext.setStudentId(submitContexts.get(i).getStudentId());
-                                restSubmitContexts.add(restSubmitContext);
+                        RestSubmitContext restSubmitContext = new RestSubmitContext();
+                        restSubmitContext.setContextId(questionnaireContexts.get(i).getId());
+                        restSubmitContext.setContext(questionnaireContexts.get(i).getContext());
+                        restSubmitContext.setContextState(questionnaireContexts.get(i).getState());
+                        restSubmitContext.setQuestionnaireContextTitleId(questionnaireContexts.get(i).getQuestionnaireContextTitleId());
+                        restSubmitContext.setQuestionnaireId(questionnaireId);
+                        for (int j = 0; j < submitContexts.size(); j++) {
+                            if(questionnaireContexts.get(i).getId().equals(submitContexts.get(j).getQuestionnaireContextId())){
+                                restSubmitContext.setSubmitState(submitContexts.get(j).getSubmitState());
+                                restSubmitContext.setStudentId(submitContexts.get(j).getStudentId());
+
                             }
-                        }else{
-                            RestSubmitContext restSubmitContext = new RestSubmitContext();
-                            restSubmitContext.setContextId(questionnaireContexts.get(i).getId());
-                            restSubmitContext.setContext(questionnaireContexts.get(i).getContext());
-                            restSubmitContext.setContextState(questionnaireContexts.get(i).getState());
-                            restSubmitContext.setQuestionnaireContextTitleId(questionnaireContexts.get(i).getQuestionnaireContextTitleId());
-                            restSubmitContext.setQuestionnaireId(questionnaireId);
-                            restSubmitContext.setSubmitState(-1);
-                            restSubmitContexts.add(restSubmitContext);
                         }
+                        restSubmitContexts.add(restSubmitContext);
                     }
 
                 }
+                // 设置返回结果
                 restQuestionnaireObject.setSubmitContexts(restSubmitContexts);
 
 
@@ -423,6 +471,11 @@ public class StudentServiceImpl implements StudentService {
         return jsonObject;
     }
 
+    /**
+     * 注册
+     * @param request
+     * @return
+     */
     @Override
     public JSONObject selectTeacherByUserName(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
@@ -447,6 +500,11 @@ public class StudentServiceImpl implements StudentService {
         return jsonObject;
     }
 
+    /**
+     * 修改密码
+     * @param request
+     * @return
+     */
     @Override
     public JSONObject forgot(HttpServletRequest request) {
         TreeMap<String, String> requestParam = BaseUtil.getAllRequestParam(request);
