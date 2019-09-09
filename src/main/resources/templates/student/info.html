@@ -97,7 +97,8 @@
             // 加载没有提交过的问卷
             initData(data)
         }
-        if(state2==1){
+        if(state2==1||state==4){
+            console.log('state2==1');
             data={
                 questionnaireId:questionnaireId,
                 studentId:userid,
@@ -106,7 +107,8 @@
 
             loadSubmitData(data);
         }
-        if(state==4){
+        /*if(state==4){
+            console.log('state==4');
             data={
                 questionnaireId:questionnaireId,
                 studentId:userid,
@@ -114,7 +116,7 @@
             }
 
             loadSubmitData(data);
-        }
+        }*/
 
         buttonClick()
     })

@@ -29,8 +29,9 @@
             <span>主页</span>
         </a>
         &nbsp;
-        <a href="javascript:void(0)">
-            <span>|</span>
+        <a>
+            <img src="../../static/teacher/img/user.png">
+            <span id="userInfo">userInfo</span>
         </a>
         &nbsp;
         <a href="javascript:void(0)">
@@ -283,7 +284,7 @@
 
 
     function doSomething(id,state1,state2, obj) {
-
+        alert("state1:"+state1+'state2:'+state2)
         var type = $(obj).text();
         var data = {
             questionnaireId: id
